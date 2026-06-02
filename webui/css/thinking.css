@@ -1,0 +1,1511 @@
+/* ════════════════════════════════════════════════════════════════════
+     NEXUS — Thinking Block v8.1 (Optimized + Premium Animations)
+     Clean, conflict-free CSS with proper cascade and dark mode
+     All custom properties defined on .thinking-block for scoping
+     Major upgrades: particle burst, glow sweep, ripple, shimmer choreography
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── Scoped Design Tokens ──────────────────────────────────────────────── */
+
+.thinking-block {
+  /* Light theme tokens */
+  --think-bg: #ffffff;
+  --think-border: #e2e4ef;
+  --think-shadow: rgba(0, 0, 0, 0.04);
+  --think-header-bg: #f9fafb;
+  --think-header-bg-hover: #f3f4f6;
+  --think-header-border: #e5e7eb;
+  --think-accent: #6366f1;
+  --think-accent2: #8b5cf6;
+  --think-accent-glow: rgba(99, 102, 241, 0.18);
+  --think-text: #4b5563;
+  --think-text-light: #9ca3af;
+  --think-text-muted: #9298b5;
+  --think-divider: #d1d5db;
+  --think-count-bg: #f3f4f6;
+  --think-count-border: #e5e7eb;
+  --think-scrollbar: #d0d3e5;
+  --think-green: #17c964;
+  --think-green-pale: #e8fdf0;
+  --think-red: #f31260;
+  --think-red-pale: #fff0f3;
+  --think-blue: #0070f3;
+  --think-amber: #f5a623;
+  --think-cyan: #06b6d4;
+  --think-skeleton: #e5e7eb;
+  --think-skeleton-shine: #f3f4f6;
+  --think-particle: rgba(99, 102, 241, 0.15);
+
+  /* Spacing radii */
+  --think-radius: 8px;
+  --think-radius-pill: 999px;
+
+  /* Motion */
+  --think-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --think-tf: 140ms;
+  --think-tm: 260ms;
+  --think-ts: 440ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  .thinking-block {
+    --think-bg: #1a1b2e;
+    --think-border: #2a2d42;
+    --think-shadow: rgba(0, 0, 0, 0.2);
+    --think-header-bg: #1e1f33;
+    --think-header-bg-hover: #252640;
+    --think-header-border: #2a2d42;
+    --think-accent: #818cf8;
+    --think-accent2: #a78bfa;
+    --think-accent-glow: rgba(129, 140, 248, 0.18);
+    --think-text: #c9cdd8;
+    --think-text-light: #6b7194;
+    --think-text-muted: #6b7194;
+    --think-divider: #3a3d52;
+    --think-count-bg: #252640;
+    --think-count-border: #2a2d42;
+    --think-scrollbar: #3a3d52;
+    --think-skeleton: #2a2d42;
+    --think-skeleton-shine: #353852;
+    --think-particle: rgba(129, 140, 248, 0.15);
+  }
+}
+
+/* ── Base Block ── Enhanced with ambient breathing + border glow ───────── */
+
+.thinking-block {
+  align-self: flex-start;
+  width: fit-content;
+  min-width: 0;
+  max-width: 82%;
+  margin: 4px 0;
+  border-radius: var(--think-radius);
+  overflow: hidden;
+  border: 1px solid var(--think-border);
+  background: var(--think-bg);
+  box-shadow: 0 1px 3px var(--think-shadow);
+  position: relative;
+  flex-shrink: 0;
+  animation: thinkSlideIn 200ms var(--think-ease) forwards;
+  transition: border-color 180ms ease, box-shadow 280ms ease;
+  will-change: transform;
+}
+
+/* Ambient breathing glow + bg shift — combined into one rule */
+.thinking-block.mode-reasoning {
+  background: linear-gradient(135deg, var(--think-bg) 60%, color-mix(in srgb, var(--think-accent-glow) 20%, var(--think-bg)) 100%);
+  background-size: 200% 200%;
+  animation: thinkSlideIn 200ms var(--think-ease) forwards,
+             breatheGlow 4s ease-in-out 300ms infinite,
+             bgShift 6s ease-in-out infinite;
+}
+
+@keyframes breatheGlow {
+  0%, 100% { box-shadow: 0 1px 3px var(--think-shadow), 0 0 0 0 rgba(139, 92, 246, 0); }
+  50%      { box-shadow: 0 2px 8px var(--think-shadow), 0 0 14px rgba(139, 92, 246, 0.12); }
+}
+
+@keyframes bgShift {
+  0%, 100% { background-position: 0% 0%; }
+  50%      { background-position: 100% 100%; }
+}
+
+/* Base background — for non-reasoning mode */
+.thinking-block {
+  background: var(--think-bg);
+  background-size: 100% 100%;
+  transition: border-color 180ms ease, box-shadow 280ms ease, background 800ms ease;
+}
+
+@keyframes thinkSlideIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Top Accent Bar — Enhanced Glow Sweep ──────────────────────────────── */
+
+.thinking-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--think-accent), var(--think-accent2), var(--think-accent));
+  background-size: 300% 100%;
+  animation: stripeSlide 4s linear infinite;
+  z-index: 1;
+  transition: background 500ms ease;
+}
+
+/* ── Top Accent Glow (::after) — beneath the accent bar ───────────────── */
+
+.thinking-block::after {
+  content: '';
+  position: absolute;
+  top: 4px; left: 5%; right: 5%;
+  height: 10px;
+  background: radial-gradient(ellipse at center, var(--think-accent-glow) 0%, transparent 70%);
+  opacity: 0;
+  z-index: 0;
+  animation: glowSweep 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes glowSweep {
+  0%, 100% { opacity: 0; transform: scaleX(0.6); }
+  50%      { opacity: 0.6; transform: scaleX(1); }
+}
+
+@keyframes stripeSlide {
+  from { background-position: 0% 50%; }
+  to   { background-position: 300% 50%; }
+}
+
+/* Done state: solid green bar + stop all active animations */
+.thinking-block.done {
+  background: var(--think-bg) !important;
+  animation: thinkSlideIn 200ms var(--think-ease) forwards !important;
+}
+
+.thinking-block.done::before {
+  background: var(--think-green);
+  background-size: 100% 100%;
+  animation: none;
+}
+
+.thinking-block.done::after {
+  animation: none;
+  opacity: 0;
+}
+
+/* Mode-specific accent bar */
+.thinking-block.mode-reasoning::before {
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa, #c4b5fd, #8b5cf6);
+  background-size: 300% 100%;
+}
+
+/* ── Body (collapsible content area) ───────────────────────────────────── */
+
+  .thinking-body {
+    padding: 4px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0; /* removed gap; use borders for separation */
+    min-height: 28px;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    transition: max-height 250ms cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 180ms ease,
+                padding 180ms ease;
+    /* Optimize rendering without blocking scrollHeight recalculation */
+    contain: paint;
+  }
+
+/* Collapsed: hide body content */
+.thinking-block.collapsed > .thinking-body {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  pointer-events: none;
+}
+
+/* Scrollbar styling */
+.thinking-body::-webkit-scrollbar { width: 4px; }
+.thinking-body::-webkit-scrollbar-track { background: transparent; }
+.thinking-body::-webkit-scrollbar-thumb { background: var(--think-scrollbar); border-radius: 2px; }
+.thinking-body::-webkit-scrollbar-thumb:hover { background: var(--think-accent); }
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+
+.thinking-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  border-bottom: 1px solid var(--think-header-border);
+  background: var(--think-header-bg);
+  transition: background 150ms ease;
+  position: relative;
+  z-index: 1;
+}
+
+.thinking-header:hover {
+  background: var(--think-header-bg-hover);
+}
+
+.thinking-header:focus-visible {
+  outline: 2px solid var(--think-accent);
+  outline-offset: -2px;
+  border-radius: 2px;
+}
+
+/* Ripple effect on header click — created dynamically by JS */
+.thinking-header {
+  overflow: hidden;
+}
+
+.thinking-header .thinking-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--think-accent-glow) 0%, transparent 70%);
+  transform: scale(0);
+  animation: rippleBurst 600ms ease-out forwards;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+@keyframes rippleBurst {
+  0%   { transform: scale(0); opacity: 0.5; }
+  100% { transform: scale(4); opacity: 0; }
+}
+
+/* Chevron rotation */
+.thinking-chevron {
+  font-size: 8px;
+  color: var(--think-text-muted);
+  flex-shrink: 0;
+  transition: transform 300ms var(--think-ease);
+  display: inline-block;
+  line-height: 1;
+}
+
+.thinking-block:not(.collapsed) > .thinking-header .thinking-chevron {
+  transform: rotate(90deg);
+}
+
+.thinking-block.collapsed > .thinking-header .thinking-chevron {
+  transform: rotate(-90deg);
+  color: var(--think-accent);
+}
+
+/* ── Pulse Indicator — Enhanced ──────────────────────────────────────────── */
+
+.thinking-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--think-accent);
+  flex-shrink: 0;
+  position: relative;
+  display: inline-block;
+}
+
+.thinking-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: var(--think-accent-glow);
+  animation: orbPulse 2s ease-in-out infinite;
+}
+
+@keyframes orbPulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50%      { transform: scale(2.5); opacity: 0; }
+}
+
+/* Done state: green check pulse */
+.thinking-block.done .thinking-pulse {
+  background: var(--think-green);
+}
+.thinking-block.done .thinking-pulse::after {
+  animation: none;
+  opacity: 0;
+}
+
+.thinking-block.done .thinking-title {
+  color: var(--think-green);
+}
+
+/* ── Check Draw Animation ──────────────────────────────────────────────── */
+
+.check-draw svg {
+  stroke-dasharray: 30;
+  stroke-dashoffset: 30;
+  animation: checkDraw 400ms cubic-bezier(0.65, 0, 0.35, 1) 100ms forwards;
+}
+
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+.thinking-done-check {
+  display: inline-flex;
+  align-items: center;
+  color: var(--think-green);
+}
+
+/* ── Title — Enhanced with shimmer ─────────────────────────────────────── */
+
+.thinking-title {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--think-accent);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 300ms ease;
+  position: relative;
+}
+
+/* Shimmer sweep across title text */
+.thinking-title::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.25) 40%,
+    rgba(255,255,255,0.4) 50%,
+    rgba(255,255,255,0.25) 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: titleShimmer 3s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+@keyframes titleShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 300% 0; }
+}
+
+.thinking-block.done .thinking-title::after {
+  animation: none;
+  opacity: 0;
+}
+
+/* ── Step Count Badge — Enhanced with bounce animation ─────────────────── */
+
+.thinking-count {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--think-text-muted);
+  background: var(--think-count-bg);
+  border: 1px solid var(--think-count-border);
+  border-radius: var(--think-radius-pill);
+  padding: 0 7px;
+  line-height: 16px;
+  transition: all 300ms ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  will-change: transform;
+}
+
+.thinking-count.bump {
+  animation: countBump 300ms var(--think-ease);
+}
+
+@keyframes countBump {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.25); color: var(--think-accent); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.thinking-block.done .thinking-count {
+  color: rgba(23, 201, 100, 0.7);
+  background: var(--think-green-pale);
+  border-color: rgba(23, 201, 100, 0.2);
+  animation: none;
+}
+
+/* ── Progress Bar — Enhanced ─────────────────────────────────────────────── */
+
+.thinking-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--think-skeleton);
+  overflow: hidden;
+  z-index: 2;
+  animation: toolCardReveal 200ms ease-out;
+}
+
+.thinking-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--think-accent), var(--think-accent2));
+  border-radius: 0 2px 2px 0;
+  transition: width 250ms var(--think-ease);
+  position: relative;
+}
+
+/* Enhanced shine sweep */
+.thinking-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  bottom: 0; width: 30px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: progressSlide 1.2s ease-in-out infinite;
+}
+
+@keyframes progressSlide {
+  0%   { transform: translateX(-20px); opacity: 0; }
+  50%  { opacity: 1; }
+  100% { transform: translateX(20px); opacity: 0; }
+}
+
+/* Particle burst at completion */
+.thinking-progress-fill.complete {
+  background: var(--think-green);
+}
+
+.thinking-progress-fill.complete::after {
+  animation: none;
+  opacity: 0;
+}
+
+.thinking-progress-text {
+  display: none;
+}
+
+/* ── Step Base — Enhanced with 3D tilt & vertical guide glow ──────────── */
+
+.thinking-step {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 10px 6px 13px; /* increased vertical padding */
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.4;
+  word-break: break-word;
+  border: none;
+  border-bottom: 1px solid var(--think-border); /* visual row separator */
+  position: relative;
+  color: var(--think-text);
+  overflow: hidden;
+  flex-shrink: 0;
+  min-height: 24px;
+  transition: background 80ms ease, opacity 120ms ease, transform 180ms var(--think-ease);
+  animation: stepEntry 300ms var(--think-ease) both;
+}
+
+/* Step entrance: slide + fade + 3D perspective tilt using --stagger-rot */
+@keyframes stepEntry {
+  0%   { opacity: 0; transform: translateY(10px) scale(0.94) perspective(400px) rotateX(var(--stagger-rot, 0deg)); }
+  55%  { transform: translateY(-1px) scale(1.02) perspective(400px) rotateX(0deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) perspective(400px) rotateX(0deg); }
+}
+
+.thinking-step:hover {
+  transform: translateX(2px);
+  background: color-mix(in srgb, var(--think-accent) 4%, transparent);
+}
+
+.thinking-step:active {
+  transform: translateX(1px) scale(0.99);
+}
+
+/* Step glow sweep on hover */
+.thinking-step::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--think-particle) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 250ms ease;
+  pointer-events: none;
+}
+
+.thinking-step:hover::after {
+  opacity: 1;
+}
+
+/* Vertical guide line — flowing gradient animation */
+.thinking-step::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  border-radius: 0 1px 1px 0;
+  background: linear-gradient(180deg, var(--think-divider) 30%, var(--think-accent-glow) 50%, var(--think-divider) 70%);
+  background-size: 100% 300%;
+  transition: background 200ms ease;
+  animation: guideFlow 4s ease-in-out infinite;
+}
+
+@keyframes guideFlow {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 0% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* On hover, brighten the guide line */
+.thinking-step:hover::before {
+  background: linear-gradient(180deg, var(--think-accent) 20%, var(--think-accent2) 50%, var(--think-accent) 80%);
+  background-size: 100% 300%;
+}
+
+
+
+/* ── Step Icons ────────────────────────────────────────────────────────── */
+
+.step-icon {
+  font-size: 11px;
+  color: var(--think-text-light);
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.step-icon:focus-visible {
+  outline: 2px solid var(--think-accent);
+  border-radius: 2px;
+}
+
+.step-name {
+  font-weight: 600;
+  color: var(--tx1, #0f1117);
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+.step-params {
+  color: var(--think-text-muted);
+  font-size: 10px;
+  flex: 1;
+  word-break: break-all;
+  min-width: 0;
+}
+
+.step-output {
+  color: var(--think-text);
+  font-size: 10px;
+  flex: 1;
+  word-break: break-word;
+  min-width: 0;
+}
+
+.step-duration {
+  margin-left: auto;
+  font-size: 9px;
+  color: var(--think-text-muted);
+  flex-shrink: 0;
+  padding: 0 5px;
+  line-height: 14px;
+  font-variant-numeric: tabular-nums;
+  background: var(--think-count-bg);
+  border: 1px solid var(--think-count-border);
+  border-radius: var(--think-radius-pill);
+  transition: all 200ms ease;
+}
+
+/* ── Tool Steps ────────────────────────────────────────────────────────── */
+
+/* Tool type icon — cyan accent */
+.tool-type-icon {
+  color: var(--think-cyan) !important;
+}
+
+.tool-state-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  width: 14px;
+  height: 14px;
+}
+
+.tool-success-icon {
+  color: var(--think-green);
+  display: inline-flex;
+}
+
+.tool-error-icon {
+  color: var(--think-red);
+  display: inline-flex;
+}
+
+.tool-spinner {
+  display: inline-flex;
+  animation: toolSpin 1.2s linear infinite;
+  color: var(--think-accent);
+}
+
+@keyframes toolSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Tool type badge */
+.tool-type-badge {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(6, 182, 212, 0.08);
+  color: var(--think-cyan);
+  flex-shrink: 0;
+  border: 1px solid rgba(6, 182, 212, 0.15);
+}
+
+/* Skeleton loading for pending tools */
+.tool-skeleton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 80px;
+  padding: 2px 0;
+}
+
+.tool-skeleton-line {
+  height: 8px;
+  border-radius: 4px;
+  background-image: linear-gradient(
+    90deg,
+    var(--think-skeleton) 0%,
+    var(--think-skeleton-shine) 40%,
+    var(--think-skeleton) 80%
+  );
+  background-size: 200px 100%;
+  animation: skeletonShine 1.5s ease-in-out infinite;
+}
+
+.tool-skeleton-line-1 { width: 60%; }
+.tool-skeleton-line-2 { width: 85%; animation-delay: 0.3s; }
+
+@keyframes skeletonShine {
+  0%   { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+/* Error output */
+.tool-error-output {
+  color: var(--think-red) !important;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Tool state indicator colors */
+.thinking-step.tool.pending::before  { background: var(--think-accent); animation: placeholderPulse 1.2s ease-in-out infinite; }
+.thinking-step.tool.success          { opacity: 1; }
+.thinking-step.tool.success::before  { background: var(--think-green); }
+.thinking-step.tool.error            { color: var(--tx2, #2a2d42); background: rgba(243, 18, 96, 0.03); }
+.thinking-step.tool.error::before    { background: var(--think-red); }
+/* Additional visual for tool rows */
+.thinking-step.tool {
+  padding-left: 28px; /* indent under parent step */
+  background: color-mix(in srgb, var(--think-accent) 2%, transparent);
+}
+
+/* Tool card reveal animation */
+.tool-card-reveal {
+  animation: toolCardReveal 220ms var(--think-ease) both;
+}
+
+@keyframes toolCardReveal {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Shake error animation */
+.shake-error {
+  animation: shakeError 400ms ease-in-out !important;
+}
+
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  10%      { transform: translateX(-4px); }
+  20%      { transform: translateX(4px); }
+  30%      { transform: translateX(-3px); }
+  40%      { transform: translateX(3px); }
+  50%      { transform: translateX(-2px); }
+  60%      { transform: translateX(2px); }
+  70%      { transform: translateX(-1px); }
+  80%      { transform: translateX(1px); }
+}
+
+/* ── LLM Call Step ─────────────────────────────────────────────────────── */
+
+.thinking-step.llm-call {
+  color: var(--think-text);
+  background: rgba(91, 91, 214, 0.02);
+  padding-top: 8px;
+  border-top: 1px solid var(--think-border);
+  margin-top: 2px;
+}
+.thinking-step.llm-call::before {
+  background: var(--a-mid, #8b8cf8);
+}
+
+/* ── Agent Step ────────────────────────────────────────────────────────── */
+
+.thinking-step.agent-step {
+  color: var(--tx2, #2a2d42);
+  background: rgba(0, 112, 243, 0.03);
+}
+.thinking-step.agent-step::before {
+  background: var(--think-blue);
+}
+
+/* ── Thought Step (default) ────────────────────────────────────────────── */
+
+.thinking-step.thought::before {
+  background: var(--think-divider);
+}
+
+/* ── Reasoning Steps (Deep Reasoning Mode) ─────────────────────────────── */
+
+.thinking-reasoning-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 5px 10px 5px 13px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  position: relative;
+  color: var(--think-text);
+  transition: background 100ms ease, transform 180ms var(--think-ease);
+}
+
+.thinking-reasoning-step:hover {
+  background: rgba(139, 92, 246, 0.04);
+  transform: translateX(3px);
+}
+
+.thinking-reasoning-step::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 2px;
+  border-radius: 0 1px 1px 0;
+  background: linear-gradient(180deg, #c4b5fd 30%, #a78bfa 50%, #c4b5fd 70%);
+  background-size: 100% 300%;
+  transition: background 200ms ease;
+  animation: reasoningGuide 5s ease-in-out infinite;
+}
+
+@keyframes reasoningGuide {
+  0%   { background-position: 0% 0%; }
+  50%  { background-position: 0% 100%; }
+  100% { background-position: 0% 0%; }
+}
+
+.thinking-reasoning-step.depth-2::before { background: linear-gradient(180deg, #a78bfa, #8b5cf6, #a78bfa); background-size: 100% 300%; }
+.thinking-reasoning-step.depth-3::before { background: linear-gradient(180deg, #8b5cf6, #7c3aed, #8b5cf6); background-size: 100% 300%; }
+
+/* Reasoning numbered badge */
+.reasoning-number {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+  box-shadow: 0 1px 3px rgba(139, 92, 246, 0.3);
+  animation: reasoningPop 300ms var(--think-ease) both;
+}
+
+@keyframes reasoningPop {
+  0%   { transform: scale(0); }
+  60%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.reasoning-depth {
+  font-size: 10px;
+  color: #a78bfa;
+  letter-spacing: -2px;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* ── Reasoning Chain (Collapsible Group) ───────────────────────────────── */
+
+.thinking-chain {
+  border: 1px solid rgba(139, 92, 246, 0.1);
+  border-radius: 6px;
+  margin: 2px 6px;
+  overflow: hidden;
+  transition: border-color 200ms ease;
+  animation: chainSlide 250ms var(--think-ease) both;
+}
+
+@keyframes chainSlide {
+  0%   { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.thinking-chain:hover {
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.thinking-chain-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  background: rgba(139, 92, 246, 0.03);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.08);
+  transition: background 100ms ease;
+}
+
+.thinking-chain-header:hover {
+  background: rgba(139, 92, 246, 0.06);
+}
+
+.thinking-chain-header:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: -2px;
+}
+
+.chain-toggle {
+  font-size: 8px;
+  color: #8b5cf6;
+  transition: transform 300ms var(--think-ease);
+  display: inline-block;
+  line-height: 1;
+}
+
+.thinking-chain.chain-collapsed .chain-toggle {
+  transform: rotate(-90deg);
+}
+
+.chain-label {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #8b5cf6;
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.chain-count {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 9px;
+  color: #a78bfa;
+  background: rgba(139, 92, 246, 0.08);
+  padding: 1px 5px;
+  border-radius: var(--think-radius-pill);
+}
+
+.thinking-chain-body {
+  max-height: 600px;
+  opacity: 1;
+  transition: max-height 250ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 180ms ease;
+  overflow: hidden;
+}
+
+.thinking-chain.chain-collapsed .thinking-chain-body {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Phase Dividers — Enhanced with entrance animation ─────────────────── */
+
+@keyframes phaseFadeSlide {
+  0%   { opacity: 0; transform: translateX(-8px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.thinking-phase {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 3px 13px;
+  animation: phaseFadeSlide 300ms var(--think-ease) both;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--think-text-muted);
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+}
+
+.thinking-phase::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 0 1px 1px 0;
+  transition: background 300ms ease;
+}
+
+.thinking-phase::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--think-border);
+  min-width: 20px;
+}
+
+/* Phase color variants */
+.thinking-phase[data-phase="thinking"]    { color: var(--think-accent); }
+.thinking-phase[data-phase="thinking"]::before    { background: var(--think-accent); }
+.thinking-phase[data-phase="acting"]      { color: var(--think-blue); }
+.thinking-phase[data-phase="acting"]::before      { background: var(--think-blue); }
+.thinking-phase[data-phase="reflecting"]  { color: var(--think-amber); }
+.thinking-phase[data-phase="reflecting"]::before  { background: var(--think-amber); }
+.thinking-phase[data-phase="reflector"]   { color: var(--think-cyan); }
+.thinking-phase[data-phase="reflector"]::before   { background: var(--think-cyan); }
+
+/* Phase ::after line — pulse glow on reveal */
+.thinking-phase::after {
+  animation: phaseLineReveal 600ms var(--think-ease) forwards;
+}
+
+@keyframes phaseLineReveal {
+  0%   { opacity: 0; transform: scaleX(0.3); }
+  60%  { opacity: 0.8; }
+  100% { opacity: 1; transform: scaleX(1); }
+}
+
+/* ── Placeholder (waiting state) ───────────────────────────────────────── */
+
+.thinking-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 10px 13px;
+  color: var(--think-text-muted);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  animation: placeholderFade 180ms ease-out;
+  transition: opacity 100ms ease, transform 100ms ease;
+}
+
+@keyframes placeholderFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.thinking-placeholder::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 1px 1px 0;
+  background: var(--think-divider);
+  animation: placeholderPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes placeholderPulse {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 0.8; }
+}
+
+.thinking-placeholder-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--think-accent);
+  animation: breathe 2.5s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.95); }
+}
+
+/* Typing dots */
+.thinking-dots {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 2px;
+}
+
+.thinking-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--think-accent);
+  opacity: 0.3;
+  animation: dotBounce 1.4s ease-in-out infinite;
+}
+
+.thinking-dot:nth-child(1) { animation-delay: 0s; }
+.thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBounce {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30%           { opacity: 1;    transform: translateY(-3px); }
+}
+
+/* ── Step Particles (emitted on each new step by JS) ────────────────────── */
+
+.step-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--think-accent);
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  animation: stepParticleFly 500ms ease-out forwards;
+  box-shadow: 0 0 4px var(--think-accent-glow);
+}
+
+@keyframes stepParticleFly {
+  0%   { opacity: 0.8; transform: translate(0, -50%) scale(1.2); }
+  40%  { opacity: 0.5; }
+  100% { opacity: 0;   transform: translate(var(--tx), calc(-50% + var(--ty))) scale(0); }
+}
+
+/* ── Sparkle Particles (emitted on successful tool completion by JS) ──── */
+
+.sparkle-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0;
+  animation: sparkleFly 400ms ease-out forwards;
+}
+
+@keyframes sparkleFly {
+  0%   { opacity: 0.9; transform: translate(0, -50%) scale(1.5); }
+  50%  { opacity: 0.5; transform: translate(var(--tx), calc(-50% + var(--ty))) scale(1); }
+  100% { opacity: 0;   transform: translate(var(--tx), calc(-50% + var(--ty))) scale(0); }
+}
+
+/* ── Done Celebration Particles ─────────────────────────────────────────── */
+
+.done-particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  animation: doneParticleFly 700ms ease-out forwards;
+}
+
+@keyframes doneParticleFly {
+  0%   { opacity: 0.8; transform: translate(0, -50%) scale(1); }
+  50%  { opacity: 0.6; }
+  100% { opacity: 0;   transform: translate(var(--tx), calc(-50% + var(--ty))) scale(0); }
+}
+
+/* ── Fade-In-Up (generic entry) ─────────────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in-up {
+  animation-name: fadeInUp;
+  animation-duration: 180ms;
+  animation-fill-mode: both;
+  animation-timing-function: var(--think-ease);
+  /* Stagger delay set via inline style by JS */
+}
+
+/* ── Floating Thinking Indicator (.nx-thinking) ─────────────────────────── */
+
+.nx-thinking {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: var(--r3, 12px) var(--r3, 12px) var(--r3, 12px) var(--r1, 4px);
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--line, #e2e4ef);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 4px 16px rgba(91, 91, 214, 0.06);
+  animation: nxThinkIn 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  width: 320px;
+  min-width: 320px;
+  max-width: 320px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes nxThinkIn {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.97); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Accent line */
+.nx-thinking::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--a, #5b5bd6) 15%,
+    var(--cyan, #06b6d4) 50%,
+    var(--a, #5b5bd6) 85%,
+    transparent 100%
+  );
+  background-size: 250% 100%;
+  animation: nxAccentSlide 3s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+@keyframes nxAccentSlide {
+  0%, 100% { background-position: 100% 0; }
+  50%      { background-position: -100% 0; }
+}
+
+/* Ambient glow */
+.nx-thinking::after {
+  content: '';
+  position: absolute;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(91, 91, 214, 0.12) 0%, transparent 70%);
+  top: 50%; left: 32px;
+  transform: translate(-50%, -50%);
+  animation: nxGlowPulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes nxGlowPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1);   opacity: 0.6; }
+  50%      { transform: translate(-50%, -50%) scale(1.35); opacity: 1; }
+}
+
+/* Orb container */
+.nx-orb-wrap {
+  position: relative;
+  width: 40px; height: 40px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+/* Morphing orb */
+.nx-orb {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 18px; height: 18px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--a, #5b5bd6), var(--cyan, #06b6d4));
+  animation:
+    nxOrbMorph 6s ease-in-out infinite,
+    nxOrbGlow  3s ease-in-out infinite;
+  box-shadow:
+    0 0 12px rgba(91, 91, 214, 0.35),
+    0 0 24px rgba(91, 91, 214, 0.15);
+}
+
+@keyframes nxOrbMorph {
+  0%, 100% {
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+  }
+  25% {
+    border-radius: 42% 58% 52% 48%;
+    transform: translate(-50%, -50%) rotate(90deg) scale(1.06);
+  }
+  50% {
+    border-radius: 55% 45% 42% 58%;
+    transform: translate(-50%, -50%) rotate(180deg) scale(0.95);
+  }
+  75% {
+    border-radius: 48% 52% 55% 45%;
+    transform: translate(-50%, -50%) rotate(270deg) scale(1.04);
+  }
+}
+
+@keyframes nxOrbGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 12px rgba(91, 91, 214, 0.35),
+      0 0 24px rgba(91, 91, 214, 0.15);
+  }
+  50% {
+    box-shadow:
+      0 0 18px rgba(91, 91, 214, 0.5),
+      0 0 36px rgba(91, 91, 214, 0.2),
+      0 0 48px rgba(6, 182, 212, 0.08);
+  }
+}
+
+/* Inner shimmer */
+.nx-orb::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  filter: blur(2px);
+  animation: nxShimmer 4s ease-in-out infinite;
+}
+
+@keyframes nxShimmer {
+  0%, 100% { opacity: 0.5; transform: translate(0, 0); }
+  33%      { opacity: 0.8; transform: translate(3px, -2px); }
+  66%      { opacity: 0.4; transform: translate(-2px, 3px); }
+}
+
+/* Orbiting particles */
+.nx-orbit {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 100%; height: 100%;
+  animation: nxOrbitSpin linear infinite;
+  pointer-events: none;
+}
+
+.nx-orbit:nth-child(2) { animation-duration: 3s; }
+.nx-orbit:nth-child(3) { animation-duration: 4.5s; animation-direction: reverse; }
+.nx-orbit:nth-child(4) { animation-duration: 6s; }
+.nx-orbit:nth-child(5) { animation-duration: 2.5s; animation-direction: reverse; }
+
+@keyframes nxOrbitSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.nx-orbit-dot {
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  top: -2px; left: 50%;
+  transform: translateX(-50%);
+}
+
+.nx-orbit:nth-child(2) .nx-orbit-dot {
+  background: var(--a, #5b5bd6);
+  box-shadow: 0 0 6px rgba(91, 91, 214, 0.5);
+  animation: nxParticlePulse 3s ease-in-out infinite;
+}
+.nx-orbit:nth-child(3) .nx-orbit-dot {
+  width: 3px; height: 3px;
+  background: var(--cyan, #06b6d4);
+  box-shadow: 0 0 5px rgba(6, 182, 212, 0.5);
+  animation: nxParticlePulse 4.5s ease-in-out infinite 1s;
+}
+.nx-orbit:nth-child(4) .nx-orbit-dot {
+  width: 3.5px; height: 3.5px;
+  background: var(--a-mid, #8b8cf8);
+  box-shadow: 0 0 5px rgba(139, 140, 248, 0.4);
+  animation: nxParticlePulse 6s ease-in-out infinite 0.5s;
+}
+.nx-orbit:nth-child(5) .nx-orbit-dot {
+  width: 2.5px; height: 2.5px;
+  background: var(--green, #17c964);
+  box-shadow: 0 0 4px rgba(23, 201, 100, 0.4);
+  animation: nxParticlePulse 2.5s ease-in-out infinite 1.5s;
+}
+
+@keyframes nxParticlePulse {
+  0%, 100% { opacity: 0.4; transform: translateX(-50%) scale(0.8); }
+  50%      { opacity: 1;    transform: translateX(-50%) scale(1.2); }
+}
+
+/* Ring trace */
+.nx-ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 36px; height: 36px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(91, 91, 214, 0.08);
+  animation: nxRingPulse 4s ease-in-out infinite;
+}
+
+.nx-ring:nth-child(6) {
+  width: 32px; height: 32px;
+  animation-delay: 1.5s;
+  border-color: rgba(6, 182, 212, 0.06);
+}
+
+@keyframes nxRingPulse {
+  0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 0.7; transform: translate(-50%, -50%) scale(1.08); }
+}
+
+/* Floating text area */
+.nx-thinking-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 1;
+  min-width: 0;
+}
+
+.nx-thinking-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a, #5b5bd6);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.nx-thinking-status {
+  font-size: 12.5px;
+  color: var(--tx2, #2a2d42);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.nx-thinking-status span {
+  display: inline-block;
+  animation: nxStatusFade 4.5s ease-in-out infinite;
+}
+
+@keyframes nxStatusFade {
+  0%, 20%  { opacity: 1; }
+  22%, 24% { opacity: 0; }
+  26%, 46% { opacity: 1; }
+  48%, 50% { opacity: 0; }
+  52%, 72% { opacity: 1; }
+  74%, 76% { opacity: 0; }
+  78%, 98% { opacity: 1; }
+}
+
+/* Phase color shifts */
+.nx-thinking[data-phase="planning"] .nx-orb {
+  background: linear-gradient(135deg, var(--a, #5b5bd6), #818cf8);
+  box-shadow: 0 0 12px rgba(91, 91, 214, 0.4), 0 0 24px rgba(91, 91, 214, 0.15);
+}
+.nx-thinking[data-phase="planning"] .nx-thinking-label { color: var(--a, #5b5bd6); }
+
+.nx-thinking[data-phase="tools"] .nx-orb {
+  background: linear-gradient(135deg, var(--cyan, #06b6d4), #22d3ee);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.4), 0 0 24px rgba(6, 182, 212, 0.15);
+}
+.nx-thinking[data-phase="tools"] .nx-thinking-label { color: var(--cyan, #06b6d4); }
+
+.nx-thinking[data-phase="reasoning"] .nx-orb {
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.4), 0 0 24px rgba(139, 92, 246, 0.15);
+}
+.nx-thinking[data-phase="reasoning"] .nx-thinking-label { color: #8b5cf6; }
+
+/* Exit animation */
+.nx-thinking.exiting {
+  animation: nxThinkOut 280ms ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes nxThinkOut {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-6px) scale(0.96); }
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .thinking-block {
+    max-width: 92% !important;
+  }
+
+  .nx-thinking {
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .nx-orb-wrap { width: 34px; height: 34px; }
+  .nx-orb { width: 14px; height: 14px; }
+  .nx-thinking-status { font-size: 12px; max-width: 160px; }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .thinking-block,
+  .nx-thinking { animation: none !important; }
+
+  .thinking-block::before,
+  .nx-thinking::before { animation: none !important; }
+
+  .thinking-block::after,
+  .nx-thinking::after { animation: none !important; }
+
+  .thinking-pulse::after { animation: none !important; }
+
+  .thinking-block.mode-reasoning,
+  .thinking-step,
+  .thinking-reasoning-step,
+  .thinking-phase,
+  .thinking-dot,
+  .tool-spinner,
+  .tool-skeleton-line,
+  .shake-error,
+  .check-draw svg,
+  .thinking-progress-fill::after,
+  .fade-in-up,
+  .tool-card-reveal,
+  .nx-orb,
+  .nx-orb::after,
+  .nx-orbit,
+  .nx-orbit-dot,
+  .nx-ring,
+  .nx-thinking-status span,
+  .thinking-count.bump,
+  .thinking-title::after,
+  .step-particle,
+  .done-particle {
+    animation: none !important;
+  }
+
+  .nx-thinking .nx-orb {
+    box-shadow: 0 0 12px rgba(91, 91, 214, 0.3);
+  }
+
+  .nx-thinking .nx-orb::after { opacity: 0.4; }
+  .nx-thinking .nx-orbit-dot  { opacity: 0.6; }
+  .nx-thinking .nx-ring       { opacity: 0.4; }
+  .thinking-dot               { opacity: 0.5; }
+
+  .thinking-block .thinking-body { transition: none !important; }
+}

@@ -1,0 +1,869 @@
+/* ═══════════════════════════════════════════════════════════════
+   Virtual Computer Panel — matches Nexus UI theme
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Two-column layout ──────────────────────────────────────── */
+#vm-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.vm-sidebar {
+  width: 320px;
+  min-width: 320px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.vm-display {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--bg);
+}
+
+/* ── Control groups ──────────────────────────────────────────── */
+.vm-controls-group {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.vm-group-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--tx4);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 10px;
+}
+
+/* ── Status ─────────────────────────────────────────────────── */
+.vm-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.vm-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vm-status-dot.running {
+  background: var(--green);
+  box-shadow: 0 0 0 3px rgba(23, 201, 100, 0.2);
+  animation: vmPulse 2s ease-in-out infinite;
+}
+
+.vm-status-dot.stopped {
+  background: var(--tx4);
+}
+
+@keyframes vmPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(23, 201, 100, 0.2); }
+  50% { box-shadow: 0 0 0 6px rgba(23, 201, 100, 0.08); }
+}
+
+.vm-info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vm-info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.vm-info-label {
+  color: var(--tx4);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  min-width: 70px;
+}
+
+.vm-info-value {
+  color: var(--tx2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.vm-btn-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.vm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: var(--r2);
+  border: 1px solid var(--line2);
+  background: var(--surface);
+  color: var(--tx3);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.vm-btn:hover {
+  background: var(--hover);
+  color: var(--tx2);
+  border-color: var(--line2);
+}
+
+.vm-btn:active {
+  transform: scale(0.97);
+}
+
+.vm-btn--accent {
+  background: var(--a);
+  border-color: var(--a-dark);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(91, 91, 214, 0.18);
+}
+
+.vm-btn--accent:hover {
+  background: var(--a-dark);
+  border-color: var(--a-dark);
+}
+
+.vm-btn--green {
+  background: var(--g-pale);
+  border-color: rgba(23, 201, 100, 0.2);
+  color: var(--green);
+}
+
+.vm-btn--green:hover {
+  background: rgba(23, 201, 100, 0.15);
+}
+
+.vm-btn--warn {
+  background: var(--w-pale);
+  border-color: rgba(245, 166, 35, 0.2);
+  color: var(--warn);
+}
+
+.vm-btn--warn:hover {
+  background: rgba(245, 166, 35, 0.15);
+}
+
+.vm-btn--blue {
+  background: var(--b-pale);
+  border-color: rgba(0, 112, 243, 0.2);
+  color: var(--blue);
+}
+
+.vm-btn--blue:hover {
+  background: rgba(0, 112, 243, 0.15);
+}
+
+.vm-btn--red {
+  background: var(--r-pale);
+  border-color: rgba(243, 18, 96, 0.15);
+  color: var(--red);
+}
+
+.vm-btn--red:hover {
+  background: rgba(243, 18, 96, 0.12);
+}
+
+.vm-btn--sm {
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+/* ── Inputs ─────────────────────────────────────────────────── */
+.vm-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.vm-input-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--tx4);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.vm-input {
+  padding: 6px 10px;
+  border-radius: var(--r1);
+  border: 1px solid var(--line2);
+  background: var(--surface2);
+  color: var(--tx1);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vm-input:focus {
+  border-color: var(--a-mid);
+  box-shadow: 0 0 0 2px var(--a-glow);
+  background: var(--surface);
+}
+
+.vm-input::placeholder {
+  color: var(--tx4);
+}
+
+.vm-input--flex {
+  flex: 1;
+  min-width: 0;
+}
+
+.vm-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px 10px;
+  border-radius: var(--r2);
+  border: 1px solid var(--line2);
+  background: var(--surface2);
+  color: var(--tx1);
+  font-family: inherit;
+  font-size: 12.5px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vm-textarea:focus {
+  border-color: var(--a-mid);
+  box-shadow: 0 0 0 2px var(--a-glow);
+  background: var(--surface);
+}
+
+.vm-textarea::placeholder {
+  color: var(--tx4);
+}
+
+/* ── Command output ──────────────────────────────────────────── */
+.vm-output {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: var(--r2);
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  line-height: 1.6;
+  min-height: 60px;
+  max-height: 200px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.vm-output-placeholder {
+  color: rgba(226, 232, 240, 0.3);
+  font-style: italic;
+}
+
+.vm-output-loading {
+  color: var(--a-mid);
+}
+
+.vm-output-error {
+  color: #f87171;
+}
+
+/* ── Vision loop status ─────────────────────────────────────── */
+.vm-vision-status {
+  margin-top: 8px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.vm-vision-running {
+  color: var(--a);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vm-vision-running::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--a);
+  animation: vmPulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.vm-vision-complete {
+  color: var(--green);
+}
+
+/* ── Screenshot display ─────────────────────────────────────── */
+.vm-screenshot-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 16px;
+  min-height: 300px;
+  background: #0f172a;
+  position: relative;
+}
+
+.vm-screenshot-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: var(--r2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.vm-screenshot-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: rgba(226, 232, 240, 0.2);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ── Display footer ─────────────────────────────────────────── */
+.vm-display-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.vm-vnc-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+}
+
+.vm-vnc-label {
+  color: var(--tx4);
+  font-weight: 600;
+}
+
+#vm-vnc-address {
+  color: var(--a);
+}
+
+.vm-display-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  #vm-layout {
+    flex-direction: column;
+  }
+
+  .vm-sidebar {
+    width: 100%;
+    min-width: 0;
+    max-height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .vm-display {
+    min-height: 300px;
+  }
+
+  .vm-screenshot-wrap {
+    min-height: 200px;
+  }
+
+  /* VM live viewer responsive */
+  .vm-live-viewer {
+    width: calc(100vw - var(--sb-w) - 48px) !important;
+    max-width: 100% !important;
+    left: 12px !important;
+  }
+
+  .vm-live-viewer.minimized {
+    width: auto !important;
+    left: auto !important;
+    right: 12px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VM Live Viewer — Draggable live VM rendering block in chat
+   Glass-morphism · Drag-constrained to chat panel
+   ═══════════════════════════════════════════════════════════════ */
+
+.vm-live-viewer {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 480px;
+  z-index: 100;
+  border-radius: var(--r3);
+  background: rgba(15, 18, 30, 0.92);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  transition: box-shadow 0.3s var(--ease), transform 0.3s var(--ease), opacity 0.25s var(--ease);
+  outline: none;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  contain: layout style;
+  will-change: top, left, transform;
+}
+
+.vm-live-viewer:hover {
+  box-shadow:
+    0 24px 72px rgba(0, 0, 0, 0.4),
+    0 6px 20px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ── Keyboard-active glow ring ──────────────────────────── */
+.vm-live-viewer.kb-active {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.35),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    0 0 0 3px rgba(99, 102, 241, 0.15),
+    0 0 20px rgba(99, 102, 241, 0.08);
+}
+
+/* ── State indicators via border accent ─────────────────── */
+.vm-live-viewer.state-connected {
+  border-color: rgba(23, 201, 100, 0.25);
+}
+
+.vm-live-viewer.state-connected.kb-active {
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+.vm-live-viewer.state-connecting {
+  border-color: rgba(245, 166, 35, 0.3);
+}
+
+.vm-live-viewer.state-offline {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.vm-live-viewer.state-error {
+  border-color: rgba(243, 18, 96, 0.3);
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.vm-live-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: grab;
+  user-select: none;
+  min-height: 38px;
+}
+
+.vm-live-viewer.minimized .vm-live-header {
+  border-bottom: none;
+}
+
+.vm-live-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.vm-live-header-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* ── Status indicator dot ────────────────────────────────── */
+.vm-live-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  background: var(--tx4);
+}
+
+.state-connected .vm-live-indicator {
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(23, 201, 100, 0.5);
+  animation: vmLivePulse 2s ease-in-out infinite;
+}
+
+.state-connecting .vm-live-indicator {
+  background: var(--warn);
+  box-shadow: 0 0 6px rgba(245, 166, 35, 0.4);
+  animation: vmLivePulse 1s ease-in-out infinite;
+}
+
+.state-error .vm-live-indicator {
+  background: var(--red);
+  box-shadow: 0 0 6px rgba(243, 18, 96, 0.4);
+}
+
+.state-offline .vm-live-indicator {
+  background: rgba(255, 255, 255, 0.2);
+  animation: none;
+}
+
+@keyframes vmLivePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ── Title ───────────────────────────────────────────────── */
+.vm-live-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+/* ── FPS counter ─────────────────────────────────────────── */
+.vm-live-fps {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.35);
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--r1);
+  white-space: nowrap;
+}
+
+.state-connected .vm-live-fps {
+  color: rgba(23, 201, 100, 0.6);
+  background: rgba(23, 201, 100, 0.08);
+}
+
+/* ── Header buttons ──────────────────────────────────────── */
+.vm-live-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r1);
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.vm-live-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.vm-live-btn:active {
+  transform: scale(0.92);
+}
+
+.vm-live-close-btn:hover {
+  background: rgba(243, 18, 96, 0.15);
+  color: var(--red);
+}
+
+/* ── Body / Canvas area ──────────────────────────────────── */
+.vm-live-body {
+  position: relative;
+  background: #0a0c14;
+  overflow: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.vm-live-viewer.minimized .vm-live-body {
+  display: none;
+}
+
+.vm-live-body canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: auto;
+  cursor: default;
+}
+
+.vm-live-viewer.kb-active .vm-live-body canvas {
+  cursor: pointer;
+}
+
+/* ── Overlay (offline/connecting/error states) ───────────── */
+.vm-live-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 12, 20, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 2;
+  transition: opacity 0.25s ease;
+}
+
+.vm-live-viewer.minimized .vm-live-overlay {
+  display: none;
+}
+
+.vm-live-overlay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  padding: 16px;
+}
+
+.vm-live-overlay-content svg {
+  opacity: 0.4;
+}
+
+.state-connected .vm-live-overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Keyboard type hint ──────────────────────────────────── */
+.vm-live-keyboard-hint {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: var(--rpill);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  font-weight: 500;
+  z-index: 3;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+}
+
+.vm-live-keyboard-hint svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.vm-live-viewer.kb-active .vm-live-keyboard-hint {
+  opacity: 0 !important;
+  display: none !important;
+}
+
+/* ── Minimized state ─────────────────────────────────────── */
+.vm-live-viewer.minimized {
+  border-radius: var(--r2);
+  opacity: 0.85;
+}
+
+.vm-live-viewer.minimized:hover {
+  opacity: 1;
+}
+
+/* ── Click ripple effect ─────────────────────────────────── */
+.vm-live-click-ripple {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(99, 102, 241, 0.6);
+  background: rgba(99, 102, 241, 0.15);
+  pointer-events: none;
+  z-index: 5;
+  transform: translate(-50%, -50%) scale(0);
+  animation: vmClickRipple 0.5s ease-out forwards;
+}
+
+@keyframes vmClickRipple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* ── Agent activity indicator (shows when agent is interacting) ── */
+.vm-live-agent-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  background: rgba(99, 102, 241, 0.85);
+  border-radius: var(--rpill);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  z-index: 4;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  letter-spacing: 0.02em;
+}
+
+.vm-live-agent-badge.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.vm-live-agent-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  animation: vmLivePulse 1s ease-in-out infinite;
+}
+
+/* ── Typing input bar at bottom of viewer ────────────────── */
+.vm-live-input-bar {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.vm-live-viewer.kb-active .vm-live-input-bar {
+  display: flex;
+}
+
+.vm-live-input-bar input {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 8px;
+  border-radius: var(--r1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.vm-live-input-bar input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.vm-live-input-bar input:focus {
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+.vm-live-input-bar button {
+  padding: 4px 12px;
+  border-radius: var(--r1);
+  border: none;
+  background: var(--a);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  white-space: nowrap;
+}
+
+.vm-live-input-bar button:hover {
+  background: var(--a-dark);
+}
+
+/* ── Resize handle (bottom-right) ────────────────────────── */
+.vm-live-resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  z-index: 6;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.vm-live-viewer:hover .vm-live-resize-handle {
+  opacity: 0.3;
+}
+
+.vm-live-resize-handle::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+}

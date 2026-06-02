@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hyper Nexus — AI Agent</title>
+<link rel="stylesheet" href="/static/css/style.css?v=9" />
+<link rel="stylesheet" href="/static/css/thinking.css?v=12" />
+<link rel="stylesheet" href="/static/css/browser-live.css?v=5" />
+<link rel="stylesheet" href="/static/css/virtual-computer.css?v=3" />
+<link rel="stylesheet" href="/static/css/sci-fi-theme.css?v=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%236366f1'/><stop offset='1' stop-color='%2306b6d4'/></linearGradient></defs><rect width='32' height='32' rx='8' fill='url(%23g)'/><polygon points='16,3 27,9.5 27,22.5 16,29 5,22.5 5,9.5' fill='none' stroke='white' stroke-width='1.5'/><circle cx='16' cy='16' r='3' fill='white'/><line x1='16' y1='3' x2='16' y2='29' stroke='rgba(255,255,255,0.4)' stroke-width='1'/><line x1='5' y1='9.5' x2='27' y2='22.5' stroke='rgba(255,255,255,0.4)' stroke-width='1'/><line x1='27' y1='9.5' x2='5' y2='22.5' stroke='rgba(255,255,255,0.4)' stroke-width='1'/></svg>">
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════ -->
+  <aside id="sidebar">
+    <div class="sidebar-top-bar"></div>
+
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 40 40" width="38" height="38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="100%" stop-color="#06b6d4"/>
+            </linearGradient>
+            <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#a5b4fc"/>
+              <stop offset="100%" stop-color="#67e8f9"/>
+            </linearGradient>
+          </defs>
+          <polygon points="20,2 34,10 34,30 20,38 6,30 6,10" fill="url(#lg1)" opacity="0.12"/>
+          <polygon points="20,2 34,10 34,30 20,38 6,30 6,10" fill="none" stroke="url(#lg1)" stroke-width="1.8" stroke-linejoin="round"/>
+          <line x1="20" y1="2" x2="20" y2="38" stroke="url(#lg2)" stroke-width="1" opacity="0.45"/>
+          <line x1="6" y1="10" x2="34" y2="30" stroke="url(#lg2)" stroke-width="1" opacity="0.45"/>
+          <line x1="34" y1="10" x2="6" y2="30" stroke="url(#lg2)" stroke-width="1" opacity="0.45"/>
+          <circle cx="20" cy="20" r="4.5" fill="url(#lg1)"/>
+          <circle cx="20" cy="20" r="2" fill="white"/>
+          <circle cx="20" cy="2"  r="2.2" fill="url(#lg1)"/>
+          <circle cx="34" cy="10" r="1.8" fill="url(#lg1)" opacity="0.75"/>
+          <circle cx="34" cy="30" r="1.8" fill="url(#lg1)" opacity="0.75"/>
+          <circle cx="20" cy="38" r="2.2" fill="url(#lg1)"/>
+          <circle cx="6"  cy="30" r="1.8" fill="url(#lg1)" opacity="0.75"/>
+          <circle cx="6"  cy="10" r="1.8" fill="url(#lg1)" opacity="0.75"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <div class="brand-name">Hyper Nexus</div>
+        <div class="brand-tagline">
+          <span class="online-dot"></span>
+          <span id="agent-name-label">AI Agent</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a class="nav-item active" data-panel="chat" role="button" tabindex="0">
+        <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+        Chat
+        <span class="nav-badge" id="badge-chat"></span>
+      </a>
+      <a class="nav-item" data-panel="tools" role="button" tabindex="0">
+        <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
+        Tools
+      </a>
+      <a class="nav-item" data-panel="skills" role="button" tabindex="0">
+        <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+        Skills
+      </a>
+      <a class="nav-item" data-panel="memory" role="button" tabindex="0">
+        <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span>
+        Memory
+      </a>
+      <a class="nav-item" data-panel="goals" role="button" tabindex="0">
+        <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
+        Goals
+      </a>
+      <a class="nav-item" data-panel="activity" role="button" tabindex="0">
+        <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+        Activity
+      </a>
+       <a class="nav-item" data-panel="workspace" role="button" tabindex="0">
+         <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+         Workspace
+       </a>
+       <a class="nav-item" data-panel="metrics" role="button" tabindex="0">
+        <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+        Metrics
+      </a>
+      <div class="nav-sep"></div>
+      <a class="nav-item" data-panel="settings" role="button" tabindex="0">
+        <span class="nav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="ws-indicator">
+        <span class="ws-dot" id="ws-dot"></span>
+        <span id="ws-status">connecting…</span>
+      </div>
+      <span class="ver-tag">v3.0</span>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════
+       MAIN
+  ══════════════════════════════════ -->
+  <main id="main">
+
+    <!-- CHAT -->
+    <section class="panel active" data-panel="chat">
+      <div class="panel-topbar">
+        <div class="panel-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Chat
+        </div>
+          <div class="panel-actions">
+            <button id="integrations-trigger" class="topbar-btn" title="Integrations">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              Integrations
+            </button>
+            <button id="triggers-trigger" class="topbar-btn" title="Triggers">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Triggers
+            </button>
+            <button id="mcp-trigger" class="topbar-btn" title="MCP Servers">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="8" height="8" rx="2"/><rect x="14" y="2" width="8" height="8" rx="2"/><rect x="2" y="14" width="8" height="8" rx="2"/><rect x="14" y="14" width="8" height="8" rx="2"/><circle cx="6" cy="6" r="1" fill="currentColor"/><circle cx="18" cy="6" r="1" fill="currentColor"/><circle cx="6" cy="18" r="1" fill="currentColor"/><circle cx="18" cy="18" r="1" fill="currentColor"/></svg>
+              MCP
+            </button>
+          <button id="session-toggle" class="topbar-btn" title="Toggle sessions">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/></svg>
+          </button>
+          
+          <button id="new-chat" class="topbar-btn accent">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New
+          </button>
+          <button id="clear-all-chats" class="topbar-btn ghost-danger">Clear all</button>
+          <button id="browser-live-toggle" class="topbar-btn" title="Browser Live View">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </button>
+          <button id="vm-live-toggle" class="topbar-btn" title="VM Live Viewer (Ctrl+Shift+V)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><circle cx="12" cy="10" r="2" fill="currentColor" opacity="0.3"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="chat-layout">
+        <div id="session-list">
+          <div class="list-header">Sessions</div>
+          <div id="sessions"></div>
+        </div>
+        <div id="chat-main">
+          <div id="messages"></div>
+          <button id="scroll-fab" title="Scroll to bottom">
+            <svg class="fab-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div id="composer-area">
+            <!-- Attachments preview strip -->
+            <div id="attach-strip" style="display:none"></div>
+            <!-- Main composer row -->
+            <div id="composer">
+              <button id="attach-btn" class="composer-icon-btn" title="Attach file">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              </button>
+              <input type="file" id="file-input" style="display:none" multiple>
+              <div id="composer-inner">
+                <textarea id="input" placeholder="Message Hyper Nexus…" rows="1"></textarea>
+                <span id="char-count"></span>
+              </div>
+              <button id="send" title="Send (Enter)">
+                <svg class="send-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+            <div id="composer-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOOLS -->
+    <section class="panel" data-panel="tools">
+      <div class="panel-topbar">
+        <div class="panel-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Tools
+        </div>
+        <div class="panel-actions">
+          <div class="tx-search-wrap">
+            <svg class="tx-search-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="tools-search" class="tx-search" placeholder="Filter tools…">
+          </div>
+          <button id="add-tool" class="topbar-btn accent">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Tool
+          </button>
+        </div>
+      </div>
+      <div id="tools-grid"></div>
+    </section>
+
+    <!-- SKILLS -->
+    <section class="panel" data-panel="skills"></section>
+
+    <!-- MEMORY -->
+    <section class="panel" data-panel="memory">
+      <div class="panel-topbar">
+        <div class="panel-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg> Memory</div>
+        <div class="panel-actions">
+          <select id="memory-filter" class="topbar-select">
+            <option value="">All types</option>
+            <option value="factual">Factual</option>
+            <option value="semantic">Semantic</option>
+            <option value="episodic">Episodic</option>
+            <option value="procedural">Procedural</option>
+          </select>
+        </div>
+      </div>
+      <!-- Stats bar -->
+      <div id="memory-stats-bar"></div>
+      <!-- Memory list container with scroll -->
+      <div class="mem-scroll-wrap" style="flex:1;overflow-y:auto;min-height:0">
+        <div id="memories-list"></div>
+      </div>
+    </section>
+
+    <!-- GOALS -->
+    <section class="panel" data-panel="goals">
+      <div class="panel-topbar">
+        <div class="panel-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Goals</div>
+        <div class="panel-actions"><button id="add-goal" class="topbar-btn accent"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> New Goal</button></div>
+      </div>
+      <div id="goals-list"></div>
+    </section>
+
+    <!-- ACTIVITY -->
+    <section class="panel" data-panel="activity">
+      <div class="panel-topbar">
+        <div class="panel-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Activity
+        </div>
+        <div class="panel-actions">
+          <button id="clear-activity" class="topbar-btn ghost-danger">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+            Clear
+          </button>
+        </div>
+      </div>
+      <div id="activity-log"></div>
+    </section>
+
+    <!-- METRICS -->
+    <section class="panel" data-panel="metrics">
+      <div class="panel-topbar">
+        <div class="panel-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Metrics
+        </div>
+      </div>
+      <div class="mx-scroll">
+
+        <!-- KPI Row -->
+        <div class="mx-kpi-row">
+          <div class="mx-kpi cp">
+            <div class="mx-kpi-label">Total Tokens</div>
+            <div class="mx-kpi-val" id="m-total-tokens">—</div>
+            <canvas id="token-sparkline" class="mx-sparkline" width="120" height="32"></canvas>
+          </div>
+          <div class="mx-kpi cw">
+            <div class="mx-kpi-label">Cost (USD)</div>
+            <div class="mx-kpi-val" id="m-cost">—</div>
+          </div>
+          <div class="mx-kpi cg">
+            <div class="mx-kpi-label">Tool Executions</div>
+            <div class="mx-kpi-val" id="m-tools-count">—</div>
+          </div>
+          <div class="mx-kpi ci">
+            <div class="mx-kpi-label">Memories</div>
+            <div class="mx-kpi-val" id="m-memories-count">—</div>
+          </div>
+          <div class="mx-kpi">
+            <div class="mx-kpi-label">Sessions</div>
+            <div class="mx-kpi-val" id="m-sessions">—</div>
+          </div>
+          <div class="mx-kpi">
+            <div class="mx-kpi-label">Active Model</div>
+            <div class="mx-kpi-val mx-kpi-val--sm" id="m-model">—</div>
+          </div>
+        </div>
+
+        <!-- Token breakdown + success rate -->
+        <div class="mx-row2">
+          <div class="mx-card">
+            <div class="mx-card-title">Token Breakdown</div>
+            <div class="mx-token-split">
+              <div class="mx-token-bar-wrap">
+                <div class="mx-token-bar-label">Prompt</div>
+                <div class="mx-token-bar mx-token-bar--prompt"><span id="m-prompt-tokens">—</span></div>
+              </div>
+              <div class="mx-token-bar-wrap">
+                <div class="mx-token-bar-label">Completion</div>
+                <div class="mx-token-bar mx-token-bar--completion"><span id="m-completion-tokens">—</span></div>
+              </div>
+            </div>
+            <div id="token-ring" class="mx-token-ring-wrap" style="display:none"></div>
+          </div>
+          <div class="mx-card mx-card--stretch">
+            <div class="mx-card-title">Tool Success Rate</div>
+            <div class="mx-bar-outer">
+              <div class="mx-bar-inner" id="success-bar-fill"></div>
+            </div>
+            <div class="mx-bar-label" id="success-bar-label">—</div>
+          </div>
+        </div>
+
+        <!-- Tool executions -->
+        <div class="mx-section-head">
+          <span>Recent Tool Runs</span>
+        </div>
+        <div class="mx-exec-list" id="tool-executions"></div>
+
+        <!-- #26: Circuit Breaker Status -->
+        <div class="mx-section-head">
+          <span>Model Health</span>
+          <button id="cb-reset-btn" class="topbar-btn" style="margin-left:auto;padding:3px 10px;font-size:11px" title="Reset all circuit breakers">
+            Reset
+          </button>
+        </div>
+        <div id="circuit-breaker-status" style="padding:0 4px"></div>
+
+        <!-- Reflections -->
+        <div class="mx-section-head">
+          <span>Self-Reflections</span>
+        </div>
+        <div class="mx-reflection-list" id="reflections"></div>
+
+      </div>
+    </section>
+
+    <!-- WORKSPACE + FILES -->
+    <section class="panel" data-panel="workspace">
+      <div class="panel-topbar">
+        <div class="panel-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Workspace</div>
+        <div class="panel-actions">
+          <button id="upload-workspace-btn" class="topbar-btn accent">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+            Upload
+          </button>
+          <button id="ws-refresh-btn" class="topbar-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+      <div id="workspace-layout">
+        <div id="workspace-left">
+          <div class="ws-section-label">Files</div>
+          <div id="workspace-tree"></div>
+          <div class="ws-section-label" style="margin-top:8px">Recent Changes</div>
+          <div id="workspace-events"></div>
+        </div>
+        <div id="workspace-viewer">
+          <div class="ws-drop-hint">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".3"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+            <span>Select a file to preview, or drop files here to upload</span>
+          </div>
+        </div>
+      </div>
+      <input type="file" id="workspace-file-input" style="display:none" multiple>
+    </section>
+
+    <!-- VIRTUAL COMPUTER -->
+    <section class="panel" data-panel="virtual-computer">
+      <div class="panel-topbar">
+        <div class="panel-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg> Virtual Computer</div>
+        <div class="panel-actions">
+          <button id="vm-screenshot-btn" class="topbar-btn" title="Screenshot">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Screenshot
+          </button>
+          <button id="vm-refresh-btn" class="topbar-btn" title="Refresh">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="vm-layout"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="panel" data-panel="settings">
+      <div class="panel-topbar">
+        <div class="panel-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Settings</div>
+        <div class="panel-actions"><button id="save-settings" class="topbar-btn accent"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Save</button></div>
+      </div>
+      <div id="settings-form"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Modals -->
+<div id="modal-root"></div>
+<!-- Toasts -->
+<div id="toast-container"></div>
+
+<script type="module" src="/static/js/app.js?v=13"></script>
+<script>
+// Circuit breaker reset button (#26)
+document.getElementById('cb-reset-btn')?.addEventListener('click', async () => {
+  try {
+    const token = localStorage.getItem('nexus.token');
+    const headers = {};
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    const res = await fetch('/api/llm/circuit-breaker/reset', { method: 'POST', headers });
+    if (res.ok) {
+      alert('Circuit breakers reset.');
+      location.reload();
+    }
+  } catch (e) {
+    alert('Reset failed: ' + e.message);
+  }
+});
+</script>
+</body>
+</html>

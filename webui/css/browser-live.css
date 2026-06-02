@@ -1,0 +1,489 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Browser Live Viewer — Glass-morphism dark theme with teal/cyan accent.
+   Matches the VM live viewer design system but uses teal for browser identity.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Main viewer container ───────────────────────────────────────────── */
+.browser-live-viewer {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 480px;
+    background: rgba(16, 18, 32, 0.88);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(45, 212, 191, 0.2);
+    border-radius: 12px;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 1px 0 rgba(255, 255, 255, 0.06) inset;
+    z-index: 9000;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    contain: layout style;
+    overflow: hidden;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+/* State-based border accents */
+.browser-live-viewer.state-connected {
+    border-color: rgba(45, 212, 191, 0.35);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.45),
+        0 0 24px rgba(45, 212, 191, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+}
+
+.browser-live-viewer.state-connecting {
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.browser-live-viewer.state-error {
+    border-color: rgba(248, 113, 113, 0.4);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.45),
+        0 0 16px rgba(248, 113, 113, 0.1);
+}
+
+.browser-live-viewer.state-reconnecting {
+    border-color: rgba(251, 191, 36, 0.35);
+    animation: browser-pulse-border 1.5s ease-in-out infinite;
+}
+
+.browser-live-viewer.state-offline {
+    border-color: rgba(100, 116, 139, 0.3);
+}
+
+@keyframes browser-pulse-border {
+    0%, 100% { border-color: rgba(251, 191, 36, 0.2); }
+    50% { border-color: rgba(251, 191, 36, 0.5); }
+}
+
+/* Keyboard active glow ring */
+.browser-live-viewer.kb-active {
+    border-color: rgba(99, 102, 241, 0.5) !important;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.45),
+        0 0 20px rgba(99, 102, 241, 0.12),
+        0 0 0 1px rgba(99, 102, 241, 0.2) inset !important;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────── */
+.browser-live-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 10px;
+    background: linear-gradient(135deg, rgba(45, 212, 191, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    cursor: grab;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.browser-live-header:active {
+    cursor: grabbing;
+}
+
+.browser-live-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.browser-live-header-right {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.browser-live-title {
+    color: rgba(226, 232, 240, 0.9);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.01em;
+}
+
+.browser-live-fps {
+    color: rgba(148, 163, 184, 0.7);
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+}
+
+/* ── Status indicator dot ────────────────────────────────────────────── */
+.browser-live-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.browser-live-indicator.connected {
+    background: #34d399;
+    box-shadow: 0 0 6px rgba(52, 211, 153, 0.5);
+}
+
+.browser-live-indicator.connecting {
+    background: #fbbf24;
+    box-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
+    animation: browser-pulse 1s ease-in-out infinite;
+}
+
+.browser-live-indicator.offline {
+    background: #64748b;
+}
+
+.browser-live-indicator.error {
+    background: #f87171;
+    box-shadow: 0 0 6px rgba(248, 113, 113, 0.4);
+}
+
+.browser-live-indicator.reconnecting {
+    background: #fbbf24;
+    box-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
+    animation: browser-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes browser-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* ── Header buttons ──────────────────────────────────────────────────── */
+.browser-live-btn {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 5px;
+    color: rgba(226, 232, 240, 0.7);
+    cursor: pointer;
+    padding: 4px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.browser-live-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+}
+
+.browser-live-close-btn:hover {
+    background: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.3);
+}
+
+/* ── URL bar ─────────────────────────────────────────────────────────── */
+.browser-live-url-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    background: rgba(15, 23, 42, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
+}
+
+.browser-live-url-icon {
+    color: rgba(148, 163, 184, 0.5);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.browser-live-url-input {
+    flex: 1;
+    padding: 5px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    background: rgba(30, 41, 59, 0.7);
+    color: #cbd5e1;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    min-width: 0;
+}
+
+.browser-live-url-input:focus {
+    border-color: rgba(45, 212, 191, 0.4);
+    box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.1);
+    color: #e2e8f0;
+}
+
+.browser-live-url-input::placeholder {
+    color: rgba(100, 116, 139, 0.6);
+}
+
+.browser-live-url-go {
+    background: rgba(45, 212, 191, 0.15);
+    border: 1px solid rgba(45, 212, 191, 0.25);
+    border-radius: 5px;
+    color: rgba(45, 212, 191, 0.9);
+    cursor: pointer;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.browser-live-url-go:hover {
+    background: rgba(45, 212, 191, 0.25);
+    border-color: rgba(45, 212, 191, 0.4);
+    color: #2dd4bf;
+}
+
+/* ── Body (canvas area) ──────────────────────────────────────────────── */
+.browser-live-body {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #0a0e1a;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.browser-live-body canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: auto;
+}
+
+/* ── Overlay (shown when no stream) ──────────────────────────────────── */
+.browser-live-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 14, 26, 0.85);
+    z-index: 5;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.browser-live-overlay-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: rgba(148, 163, 184, 0.6);
+    font-size: 12px;
+}
+
+.browser-live-overlay-content span {
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* ── Keyboard hint ───────────────────────────────────────────────────── */
+.browser-live-keyboard-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    color: rgba(148, 163, 184, 0.7);
+    font-size: 11px;
+    z-index: 4;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+/* ── Agent activity badge ────────────────────────────────────────────── */
+.browser-live-agent-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 3px 10px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.85) 0%, rgba(139, 92, 246, 0.85) 100%);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 12px;
+    z-index: 6;
+    opacity: 0;
+    transform: translateY(-4px) scale(0.9);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.browser-live-agent-badge.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* ── Click ripple effect ─────────────────────────────────────────────── */
+.browser-live-click-ripple {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(45, 212, 191, 0.7);
+    background: rgba(45, 212, 191, 0.1);
+    transform: translate(-50%, -50%) scale(0);
+    animation: browser-ripple 0.5s ease-out forwards;
+    pointer-events: none;
+    z-index: 3;
+}
+
+@keyframes browser-ripple {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
+
+/* ── Resize handle ───────────────────────────────────────────────────── */
+.browser-live-resize-handle {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    cursor: nwse-resize;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.browser-live-viewer:hover .browser-live-resize-handle,
+.browser-live-resize-handle:active {
+    opacity: 1;
+}
+
+.browser-live-resize-handle::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid rgba(148, 163, 184, 0.35);
+    border-bottom: 2px solid rgba(148, 163, 184, 0.35);
+    border-radius: 0 0 2px 0;
+}
+
+/* ── Input bar (type text to browser) ────────────────────────────────── */
+.browser-live-input-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: rgba(15, 23, 42, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
+}
+
+.browser-live-input-bar input {
+    flex: 1;
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    background: rgba(30, 41, 59, 0.6);
+    color: #e2e8f0;
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    min-width: 0;
+}
+
+.browser-live-input-bar input:focus {
+    border-color: rgba(45, 212, 191, 0.3);
+    box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.08);
+}
+
+.browser-live-input-bar input::placeholder {
+    color: rgba(100, 116, 139, 0.6);
+}
+
+.browser-live-input-bar button {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    background: linear-gradient(135deg, rgba(45, 212, 191, 0.2) 0%, rgba(56, 189, 248, 0.15) 100%);
+    color: rgba(45, 212, 191, 0.9);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.browser-live-input-bar button:hover {
+    background: linear-gradient(135deg, rgba(45, 212, 191, 0.35) 0%, rgba(56, 189, 248, 0.25) 100%);
+    color: #2dd4bf;
+}
+
+/* ── Minimize state ──────────────────────────────────────────────────── */
+.browser-live-viewer.minimized {
+    width: auto !important;
+    min-height: unset !important;
+    overflow: visible;
+}
+
+.browser-live-viewer.minimized .browser-live-url-bar,
+.browser-live-viewer.minimized .browser-live-body,
+.browser-live-viewer.minimized .browser-live-input-bar {
+    display: none;
+}
+
+.browser-live-viewer.minimized .browser-live-header {
+    border-bottom: none;
+    border-radius: 12px;
+}
+
+/* ── Mobile responsive ───────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .browser-live-viewer {
+        width: calc(100% - 16px) !important;
+        right: 8px !important;
+        top: 8px !important;
+        left: 8px !important;
+        border-radius: 10px;
+    }
+
+    .browser-live-header {
+        padding: 6px 8px;
+    }
+
+    .browser-live-title {
+        font-size: 11px;
+    }
+
+    .browser-live-input-bar {
+        padding: 5px 8px;
+    }
+}
+
+/* ── Canvas cursor states ────────────────────────────────────────────── */
+.browser-live-viewer.kb-active .browser-live-body canvas {
+    cursor: default;
+}
+
+.browser-live-viewer:not(.kb-active) .browser-live-body canvas {
+    cursor: pointer;
+}
+
+/* ── Scrollbar hiding for canvas area ────────────────────────────────── */
+.browser-live-body::-webkit-scrollbar {
+    display: none;
+}
+
+.browser-live-body {
+    scrollbar-width: none;
+}

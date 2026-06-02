@@ -1,0 +1,62 @@
+# ── Secrets & credentials ──────────────────────────────────────────────────────
+data/settings.json
+data/*.key
+data/*.pem
+data/*.secret
+*.env
+.env
+.env.*
+
+# ── Database & runtime data ───────────────────────────────────────────────────
+data/
+*.db
+*.sqlite3
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+venv/
+.venv/
+
+# ── IDE / editor ──────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Workspace / generated files ───────────────────────────────────────────────
+data/workspace/
+data/ml_models/
+
+# ── Node (if any frontend tooling) ────────────────────────────────────────────
+node_modules/
+
+# ── Celery / Redis dump ───────────────────────────────────────────────────────
+celerybeat-schedule
+celerybeat-schedule-shm
+celerybeat-schedule-wal
+celerybeat.pid
+dump.rdb
+celery_worker*.log
+
+# ── OS junk ──────────────────────────────────────────────────────────────────
+nul
+Thumbs.db
+Desktop.ini
+._*
+
+# ── Dev debug artifacts ──────────────────────────────────────────────────────
+_debug_snippet.txt

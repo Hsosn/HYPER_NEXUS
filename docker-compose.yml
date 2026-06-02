@@ -1,0 +1,24 @@
+# ──────────────────────────────────────────────────────────────
+# Hyper-Nexus — Redis (Celery broker + event bus)
+# ──────────────────────────────────────────────────────────────
+
+services:
+  # ── Redis (Celery broker + event bus) ──────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: nexus-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - nexus_redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  nexus_redisdata:
+    driver: local
