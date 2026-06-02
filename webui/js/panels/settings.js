@@ -95,7 +95,7 @@ const SECTIONS = [
   },
   {
     id: 'heartbeat', title: 'Heartbeat',
-    desc: 'Background loop — scheduling, goal monitoring, self-improvement',
+    desc: 'Background loop — scheduling, goal monitoring, environment checks, data integrity',
     color: '#ef4444',
     icon: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
     fields: [

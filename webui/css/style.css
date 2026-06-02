@@ -4018,7 +4018,7 @@ body{
   transform: translateX(2px);
 }
 
-/* ── Automation drawer (file watches / web monitors / schedules / improvements) ── */
+/* ── Automation drawer (file watches / web monitors / schedules) ── */
 .drw-auto-body {
   display: flex; flex-direction: column; gap: 16px; padding: 4px 0;
 }

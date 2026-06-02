@@ -950,7 +950,9 @@ export function getTriggerContext() {
   return ctx || '';
 }
 
-// ── Automation Drawer (file watches / web monitors / schedules / self-improvement) ──
+// ── Automation Drawer (file watches / web monitors / schedules) ──
+// Self-improvement is fully automatic via the heartbeat (nexus/heartbeat.py)
+// every 30 minutes — no UI surface needed.
 //
 // Wires up the previously-unused API endpoints:
 //   GET  /api/watches
@@ -961,8 +963,8 @@ export function getTriggerContext() {
 //   DELETE /api/monitors/{monitor_id}
 //   GET  /api/schedules
 //   DELETE /api/schedules/{schedule_id}
-//   GET  /api/improvements
-//   POST /api/improvements/trigger
+// (Self-improvement endpoints still exist on the backend — they are
+// driven by the heartbeat and don't need a UI surface.)
 
 const AUTOMATION_SECTIONS = [
   {
@@ -1009,15 +1011,8 @@ const AUTOMATION_SECTIONS = [
     add: null,  // Schedules are created by the agent, not the user
     emptyMsg: 'No scheduled tasks yet — ask the agent to schedule one',
   },
-  {
-    id: 'improvements',
-    title: 'Self-Improvement',
-    desc: 'Run the self-improvement pipeline manually, or view the last 20 log entries.',
-    list:   '/api/improvements',
-    delete: null,  // No delete endpoint
-    add: null,    // Manual trigger only
-    emptyMsg: 'No improvement runs yet',
-  },
+  // Self-improvement section intentionally removed: it runs automatically
+  // every 30 min via the heartbeat (nexus/heartbeat.py:178) and needs no UI.
 ];
 
 export async function initAutomation() {
@@ -1069,13 +1064,10 @@ async function loadSection(section, secEl) {
     return;
   }
 
-  // Special case for self-improvement: also offer a "Run now" button
-  if (section.id === 'improvements') {
-    renderImprovements(items, listEl, actionsEl);
-  } else {
-    renderList(section, items, listEl);
-    if (section.add) renderAddForm(section, actionsEl, () => loadSection(section, secEl));
-  }
+  // Self-improvement section was removed — sections here all use the
+  // standard list+add form path.
+  renderList(section, items, listEl);
+  if (section.add) renderAddForm(section, actionsEl, () => loadSection(section, secEl));
 }
 
 function renderList(section, items, listEl) {
@@ -1161,57 +1153,6 @@ function renderAddForm(section, actionsEl, onAdded) {
     } catch (err) { toast('Failed: ' + err.message, 'error'); }
   });
   actionsEl.appendChild(form);
-}
-
-function renderImprovements(items, listEl, actionsEl) {
-  if (!items.length) {
-    listEl.innerHTML = `<div class="drw-auto-empty">${'No improvement runs yet'}</div>`;
-  } else {
-    listEl.innerHTML = '';
-    items.slice(0, 20).forEach(it => {
-      const row = document.createElement('div');
-      row.className = 'drw-auto-row';
-      const ts = it.started_at || it.created_at || it.timestamp || it.id;
-      const what = it.kind || it.type || it.cycle || 'cycle';
-      const status = it.status || (it.completed_at ? 'done' : 'running');
-      row.innerHTML = `
-        <div class="drw-auto-row-main">
-          <div class="drw-auto-row-title">
-            <span class="drw-auto-dot ${status === 'done' || status === 'ok' ? 'on' : 'off'}"></span>
-            ${escapeHtml(what)} <span class="drw-auto-tag">${escapeHtml(status)}</span>
-          </div>
-          <div class="drw-auto-row-meta">${escapeHtml(String(ts))}</div>
-        </div>`;
-      listEl.appendChild(row);
-    });
-  }
-  // Run-now button
-  const runBtn = document.createElement('button');
-  runBtn.className = 'drw-auto-add';
-  runBtn.innerHTML = `
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-    Run self-improvement now`;
-  runBtn.addEventListener('click', async () => {
-    runBtn.disabled = true;
-    runBtn.textContent = 'Triggering…';
-    try {
-      await api('/api/improvements/trigger', { method: 'POST' });
-      toast('Self-improvement cycle triggered', 'success');
-      // Refresh the list after a short delay
-      setTimeout(() => {
-        const sec = listEl.closest('.drw-auto-section');
-        if (sec) loadSection(AUTOMATION_SECTIONS.find(s => s.id === 'improvements'), sec);
-      }, 1500);
-    } catch (e) {
-      toast('Failed: ' + e.message, 'error');
-    } finally {
-      runBtn.disabled = false;
-      runBtn.innerHTML = `
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        Run self-improvement now`;
-    }
-  });
-  actionsEl.appendChild(runBtn);
 }
 
 function escapeHtml(s) {
