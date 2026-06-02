@@ -635,8 +635,48 @@ body::before, body::after { display: none !important; }
 }
 .msg-bubble a { color: var(--nx-signal); text-decoration: underline; text-underline-offset: 2px; }
 
-/* The old composer inside chat panel: HIDDEN (omni-input is global) */
-#composer-area { display: none !important; }
+/* The composer is now global inside #nx-omni, so it must stay visible.
+   The hide-when-inside-chat-panel was for the old 3-pane layout. */
+#nx-omni #composer-area { display: flex !important; flex: 1; align-items: center; padding: 0; }
+
+/* Override the old pill-style composer to fit the flat 56px omni footer */
+#nx-omni #composer-area::before { display: none !important; } /* kill gradient line */
+#nx-omni #composer { display: flex; align-items: center; gap: 0; width: 100%; height: 56px; }
+#nx-omni #composer-inner {
+  flex: 1; position: relative;
+  background: transparent !important;
+  border: 0 !important;
+  border-right: 1px solid var(--nx-line-1) !important;
+  height: 56px;
+  display: flex; align-items: center;
+}
+#nx-omni #composer-inner:focus-within { border-color: var(--nx-signal) !important; box-shadow: none; }
+#nx-omni #input {
+  width: 100%; min-height: 0 !important; max-height: 56px;
+  background: transparent !important; border: 0 !important; outline: none;
+  resize: none; font-family: var(--nx-font-mono) !important; font-size: 13px !important;
+  line-height: 56px !important; height: 56px !important;
+  color: var(--nx-fg-0) !important;
+  padding: 0 var(--nx-s-4) 0 32px !important; /* 32px = space for > prefix */
+}
+#nx-omni #input::placeholder { color: var(--nx-fg-3) !important; }
+#nx-omni .composer-icon-btn {
+  width: 32px; height: 32px; flex-shrink: 0;
+  display: grid; place-items: center;
+  background: transparent !important; color: var(--nx-fg-2) !important;
+  border: 0 !important; cursor: pointer;
+  margin: 0 0 0 var(--nx-s-3);
+}
+#nx-omni .composer-icon-btn:hover { color: var(--nx-signal) !important; background: var(--nx-bg-2) !important; }
+#nx-omni #char-count {
+  position: absolute !important; right: var(--nx-s-3) !important; bottom: auto !important; top: 50%; transform: translateY(-50%);
+  font-size: 10px !important; font-family: var(--nx-font-mono) !important; color: var(--nx-fg-3) !important;
+  pointer-events: none; padding: 0 !important;
+}
+#nx-omni #char-count.show { opacity: 1; }
+#nx-omni #char-count.warn { color: var(--nx-warn); }
+#nx-omni #char-count.over { color: var(--nx-signal); }
+#nx-omni #composer-hint { display: none !important; } /* we put the hint in the .nx-omni-side block */
 #session-list { display: none !important; } /* moved to drawer */
 
 /* When user toggles session list open (from header), show it as drawer */
