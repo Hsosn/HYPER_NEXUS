@@ -1,5 +1,9 @@
 # ──────────────────────────────────────────────────────────────
-# Hyper-Nexus — Redis (Celery broker + event bus)
+# Hyper-Nexus — full stack
+#
+#   docker compose up -d          # web + worker + beat + redis
+#   docker compose logs -f app    # tail the app
+#   docker compose down -v        # nuke it
 # ──────────────────────────────────────────────────────────────
 
 services:
@@ -19,6 +23,45 @@ services:
       retries: 10
       start_period: 5s
 
+  # ── Hyper-Nexus app (web + worker + beat, supervised) ──────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hyper-nexus:local
+    container_name: nexus-app
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      NEXUS_HOST: 0.0.0.0
+      NEXUS_PORT: "8000"
+      # Set these in a real deployment via .env or `environment:`.
+      # OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      # DATABASE_URL: postgresql://nexus:nexus@db:5432/nexus
+    ports:
+      - "8000:8000"
+    volumes:
+      # Sandbox + persistence: workspace, SQLite db, logs, uploaded files.
+      - nexus_workspace:/app/data/workspace
+      - nexus_db:/app/data/db
+      - nexus_logs:/app/data/logs
+    command: ["web", "worker", "beat"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/openapi.json"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
 volumes:
   nexus_redisdata:
+    driver: local
+  nexus_workspace:
+    driver: local
+  nexus_db:
+    driver: local
+  nexus_logs:
     driver: local

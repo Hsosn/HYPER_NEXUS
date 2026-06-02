@@ -1,0 +1,51 @@
+# Build artifacts
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.so
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Local state
+.env
+data/workspace/*
+!data/workspace/.gitkeep
+data/db/*
+!data/db/.gitkeep
+data/logs/*
+!data/logs/.gitkeep
+data/uploads/*
+!data/uploads/.gitkeep
+
+# Test artefacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.log
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docs that are not needed inside the image
+docs/screenshots/
+*.mp4
+*.gif
+
+# The agent's own output is huge and never belongs in the image
+nexus/agent_runs/
+**/checkpoints/
+**/__experiments__/
