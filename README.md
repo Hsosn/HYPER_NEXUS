@@ -1,6 +1,6 @@
 # Hyper Nexus
 
-**An autonomous AI agent platform with adaptive reasoning, 40+ built-in tools, long-term semantic memory, a pure-Python 3D engine, an ML/AI engineering suite, a sandboxed virtual computer, and a real-time Web UI — all in a single Python codebase.**
+**An autonomous AI agent platform with adaptive reasoning, 160+ built-in tools, long-term semantic memory, a pure-Python 3D engine, an ML/AI engineering suite, a sandboxed virtual computer, and a real-time Web UI — all in a single Python codebase.**
 
 > One system. One loop. Infinite capabilities.
 
@@ -48,6 +48,7 @@ Open **http://127.0.0.1:8765** in your browser.
 - [Configuration Reference](#configuration-reference)
 - [API Reference](#api-reference)
 - [Tech Stack](#tech-stack)
+- [License](#license)
 
 ---
 
@@ -60,7 +61,7 @@ Hyper Nexus is a **self-hosted, autonomous AI agent platform** that goes far bey
 - **AI/ML Engineers** who need a platform that can train PyTorch models, fine-tune LLMs with LoRA/QLoRA, run RLHF pipelines, design transformer architectures, and optimize models for deployment.
 - **3D Artists & Designers** who want procedural 3D mesh generation, CSG boolean operations, skeletal rigging, animation, path-tracing rendering, and physics simulation — all in pure Python with no GPU.
 - **Researchers** who need a system with deep research capabilities, web monitoring, file watching, journaling, and goal tracking with a self-improvement feedback loop.
-- **Automation Engineers** who need integrations with 80+ external services (Slack, GitHub, Notion, Salesforce, etc.), MCP server support, and a sandboxed virtual computer for GUI automation.
+- **Automation Engineers** who need integrations with 100+ external services (Slack, GitHub, Notion, Salesforce, etc.), MCP server support, and a sandboxed virtual computer for GUI automation.
 
 ---
 
@@ -71,18 +72,18 @@ Hyper Nexus is a **self-hosted, autonomous AI agent platform** that goes far bey
 | **Adaptive Reasoning** | Nexus Framework — single adaptive loop with action-observation cycles, step-by-step chain reasoning, branch exploration, search, stuck detection, loop detection, context compression, and sub-agent delegation |
 | **Creative Reasoning (ADHD)** | Cross-domain analogy engine — fires tasks across 8 knowledge domains (biology, physics, music, economics, architecture, game theory, neuroscience, military) to find non-obvious solutions. Hyperfocus tracking, serendipity injection, stream bleeding, and adaptive domain utility learning |
 | **Long-Term Memory** | Dual-layer: flat semantic memory (embedding-based recall with importance scoring) + hierarchical memory tree (chunked, sealed, entity-linked, cross-root relationships). Default embedding: on-device `sentence-transformers` (all-MiniLM-L6-v2). Automatic fact capture, reflective learning, consolidation, deduplication, and forgetting-curve pruning |
-| **File Write** | Atomic writes with per-path locks, binary auto-detection, Windows long-path support |
+| **File Write** | Atomic writes with per-path locks, binary auto-detection, Windows long-path support. All operations strictly confined to `data/workspace/<project>/` |
 | **Sub-Agent Delegation** | `delegate_task` (single sub-agent) and `delegate_batch` (up to 5 parallel sub-agents with retry, quality gating, and cleanup) |
 | **Presentation Tool** | 24 professional themes organized by category (business, tech, medical, education, marketing, space, ocean, luxury, etc.) |
 | **MCP Support** | Model Context Protocol — connect any MCP-compatible server and auto-register its tools |
 | **3D Engine** | Pure Python procedural 3D — mesh creation, CSG boolean operations (union/subtract/intersect), skeletal rigging, IK solvers (FABRIK, CCD), animation curves & blending, PBR materials, path tracing global illumination, scene graph, physics simulation |
-| **ML/AI Engineering** | PyTorch model training, transformer architecture design, CV workbench, NLP workbench, LLM fine-tuning (LoRA, QLoRA, AdaLoRA, RLHF), GAN studio, distributed training, model optimization (pruning, quantization, ONNX export), data pipeline management |
+| **ML/AI Engineering** | PyTorch model training (15 `pt_*` tools), transformer architecture design, CV workbench, NLP workbench, LLM fine-tuning (LoRA, QLoRA, AdaLoRA, RLHF), GAN studio, distributed training, model optimization (pruning, quantization, ONNX export), data pipeline management |
 | **Virtual Computer** | Docker-based sandboxed desktop with VNC streaming, vision-loop GUI automation, file transfer, browser and IDE pre-installed |
 | **Self-Improvement** | Multi-module learning system — experience replay, meta-learning, tool affinity analysis, failure pattern recognition, strategy injection, quality feedback loops, memory consolidation, user satisfaction detection, plus real-time failure learning |
 | **Real-Time Web UI** | WebSocket streaming chat, thinking visualization, complexity indicator, tool browser, memory viewer, goals tracker, settings editor, metrics dashboard, live browser preview, VM viewer, notifications, workspace browser, activity feed, MCP manager, integration manager |
-| **Security** | JWT authentication, API key encryption at rest (Fernet), rate limiting (burst + sustained), workspace sandboxing, security headers (CSP, X-Frame-Options), role-based access control (admin/user/viewer) |
+| **Security** | JWT authentication, API key encryption at rest (Fernet), rate limiting (burst + sustained), strict workspace sandboxing, security headers (CSP, X-Frame-Options), role-based access control (admin/user/viewer) |
 | **Environment Awareness** | Runtime OS detection, capability probing, anomaly detection (stale goals, quality decline, low disk space, missing API keys), self-awareness context injection into every reasoning loop |
-| **Task Scheduling** | Celery + Redis task queue (Windows: use `--pool=solo`), natural-language cron scheduling, background agent execution, event bridge between workers and main process |
+| **Task Scheduling** | Celery + Redis task queue (Windows: use `--pool=solo`) with 10 scheduled tasks, natural-language cron scheduling, background agent execution, event bridge between workers and main process |
 
 ---
 
@@ -90,7 +91,7 @@ Hyper Nexus is a **self-hosted, autonomous AI agent platform** that goes far bey
 
 ```
 hyper-nexus/
-├── run.py                          # Entry point — starts Uvicorn with DB init
+├── run.py                          # Entry point — starts Uvicorn with DB init (host 127.0.0.1, port 8765)
 ├── docker-compose.yml              # Optional: PostgreSQL 16 + Redis 7 containers
 ├── docker/                         # Database init scripts
 ├── requirements.txt                # Python dependencies
@@ -103,9 +104,10 @@ hyper-nexus/
 │   ├── environment.py              # Runtime awareness: OS, capabilities, anomalies
 │   ├── auth.py                     # JWT auth, rate limiting, user/role management
 │   ├── notifier.py                 # Notification creation + broadcasting
+│   ├── heartbeat.py                # In-process scheduled tasks (10 jobs)
 │   │
-│   ├── api/
-│   │   ├── server.py               # FastAPI app: REST + WebSocket chat (4302 lines)
+│   ├── api/                        # FastAPI app: REST + WebSocket
+│   │   ├── server.py               # Main server (1957 lines)
 │   │   ├── browser_routes.py       # Live browser preview (WebSocket streaming)
 │   │   └── vm_routes.py            # Virtual computer (REST + WebSocket)
 │   │
@@ -115,18 +117,18 @@ hyper-nexus/
 │   │   └── vision_local.py         # On-device vision (Florence-2, no external API)
 │   │
 │   ├── reasoning/
-│   │   ├── engine.py               # Nexus Framework adaptive loop (20,329 lines)
-│   │   └── adhd_module.py          # ADHD cross-domain creative reasoning (945 lines)
+│   │   ├── engine.py               # Nexus Framework adaptive loop (2805 lines)
+│   │   └── adhd_module.py          # ADHD cross-domain creative reasoning (801 lines)
 │   │
 │   ├── memory/
-│   │   ├── database.py             # SQLite async layer (aiosqlite, 2134 lines)
+│   │   ├── database.py             # SQLite async layer (1764 lines)
 │   │   ├── memory.py               # Flat semantic memory with embedding recall
 │   │   ├── memory_tree.py          # Hierarchical tree-based long-term memory
 │   │   └── tree_db.py              # SQLite backing for memory tree
 │   │
 │   ├── tools/
-│   │   ├── registry.py             # Tool registry: middleware, cache, rate-limit (2300+ lines)
-│   │   └── builtin/                # 40+ tools across 30+ modules
+│   │   ├── registry.py             # Tool registry: middleware, cache, rate-limit (1612 lines)
+│   │   └── builtin/                # 32 modules providing 165 tools
 │   │
 │   ├── tasks/
 │   │   ├── agent_tasks.py          # Background agent execution
@@ -135,7 +137,7 @@ hyper-nexus/
 │   │   └── task_state.py           # Task checkpoint/resume
 │   │
 │   ├── self_improve/               # Self-improvement system
-│   │   ├── __init__.py             # Main 15-step improvement pipeline
+│   │   ├── __init__.py             # Main improvement pipeline (run_improvement_pipeline)
 │   │   ├── predict.py              # Tool outcome prediction and pattern extraction
 │   │   └── realtime.py             # Real-time failure learning and fix generation
 │   │
@@ -166,8 +168,8 @@ hyper-nexus/
 │
 └── webui/                          # ═══ FRONTEND (vanilla JS SPA) ═══
     ├── index.html                  # Main entry point
-    ├── css/                        # neon-dark theme + panel styles
-    └── js/                         # 17 modules: ws, state, panels, utils
+    ├── css/                        # sci-fi theme + panel styles
+    └── js/                         # 23 modules: ws, state, panels, utils
 ```
 
 **Key architectural features:**
@@ -176,6 +178,7 @@ hyper-nexus/
 - **Real-time WebSocket streaming:** Every `emit()` call streams events to all connected browsers. The WebUI updates in real time — thoughts, tool calls, tool results, errors, self-improvement events.
 - **Event-driven architecture:** The async event bus (`nexus/events.py`) decouples all subsystems. The reasoning engine, tool system, watchers, self-improvement, and WebSocket relay all communicate through it.
 - **Session-scoped engines:** Each chat session gets its own `ReasoningEngine` instance cached in `server.py`, with its own memory, context, and tool boost state.
+- **Strict workspace confinement:** All file operations (read/write/list/delete) are blocked from escaping `data/workspace/`. The system prompt instructs the agent to nest every project in a named subfolder (e.g. `data/workspace/my_api/`).
 
 ---
 
@@ -304,7 +307,7 @@ Open your browser and navigate to **http://127.0.0.1:8765**.
 
 ### Reasoning Engine
 
-**File:** `nexus/reasoning/engine.py` (20,329 lines)
+**File:** `nexus/reasoning/engine.py` (2,805 lines)
 
 The **Nexus Framework** is the platform's adaptive reasoning core — a single loop that automatically selects the right reasoning strategy per step based on structural signals in the user's message.
 
@@ -320,14 +323,14 @@ The **Nexus Framework** is the platform's adaptive reasoning core — a single l
    - Message length and question depth
    - Returns `"low"`, `"medium"`, or `"high"`
 
-3. **Tool Prefiltering** (`_prefilter_tools`) — Filters 40+ tools down to task-relevant ones using keyword scoring. For high-complexity tasks, force-includes delegation tools (`delegate_task`, `delegate_batch`). Results cached with 30s TTL.
+3. **Tool Prefiltering** (`_prefilter_tools`) — Filters 165 tools down to task-relevant ones using keyword scoring. For high-complexity tasks, force-includes delegation tools (`delegate_task`, `delegate_batch`). Results cached with 30s TTL.
 
 4. **Planning Injection** — For complex tasks, injects a planning instruction block into the system prompt with step-by-step execution protocol and verification checkpoints.
 
 5. **ADHD Creative Injection** — For medium+ complexity tasks, fires the ADHD cross-domain reasoning module to inject creative analogies and tool suggestions into the system prompt.
 
 6. **Core Reasoning Loop** — Iterative `thought → action → observation` cycle with:
-   - **Stuck Detection** — Same tool+args repeated? Forces a different approach
+   - **Stuck Detection** — Same tool+args repeated 3 times (`loop_detection_threshold`)? Forces a different approach
    - **Loop Detection** — Too many iterations? Forces completion with summary
    - **Hallucination Detection** — Regex patterns catch fabricated tool results, future-tense descriptions, and fake references
    - **Context Compression** — Adaptively truncates old history when approaching token limits
@@ -349,7 +352,7 @@ The **Nexus Framework** is the platform's adaptive reasoning core — a single l
 
 ### ADHD Cross-Domain Reasoning Module
 
-**File:** `nexus/reasoning/adhd_module.py` (945 lines)
+**File:** `nexus/reasoning/adhd_module.py` (801 lines)
 
 A creative reasoning booster that mimics the ADHD brain's superpower: hyper-connecting seemingly unrelated knowledge domains.
 
@@ -381,7 +384,7 @@ A clean abstraction layer over multiple LLM providers:
 
 - **Provider Support:** OpenRouter (default), OpenAI, Together AI, NVIDIA NIM, Groq, custom OpenAI-compatible endpoints (Ollama, LM Studio, Azure OpenAI)
 - **Circuit Breaker:** Automatically detects failures and stops calling a provider after configurable thresholds. Periodic health checks for recovery detection.
-- **Cost Tracking:** Per-request token counting and USD cost estimation per model, with cumulative cost caps per task
+- **Cost Tracking:** Per-request token counting and USD cost estimation per model, with cumulative cost caps per task (default $2.00)
 - **Model Routing:** Separate model configurations for reasoning (`default_model`), memory (`memory_model`), and vision (Florence-2 local)
 - **Rate Limiting:** Client-side rate limiting to stay within provider API limits
 - **Retry Logic:** Exponential backoff with jitter on transient failures
@@ -389,7 +392,7 @@ A clean abstraction layer over multiple LLM providers:
 
 ### Memory System
 
-**Files:** `nexus/memory/database.py` (2134 lines), `nexus/memory/memory.py`, `nexus/memory/memory_tree.py`, `nexus/memory/tree_db.py`
+**Files:** `nexus/memory/database.py` (1,764 lines), `nexus/memory/memory.py`, `nexus/memory/memory_tree.py`, `nexus/memory/tree_db.py`
 
 Dual-layer long-term memory architecture:
 
@@ -418,7 +421,7 @@ Dual-layer long-term memory architecture:
 
 ### Tool System
 
-**File:** `nexus/tools/registry.py` (2300+ lines) + 30+ modules in `nexus/tools/builtin/` providing 40+ tools
+**File:** `nexus/tools/registry.py` (1,612 lines) + 32 modules in `nexus/tools/builtin/` providing **165 tools**
 
 **Tool Registry — Production-Grade Execution Engine:**
 
@@ -435,68 +438,63 @@ Dual-layer long-term memory architecture:
 - **Composition:** Sequential ("pipe"), parallel, and fan-out strategies
 - **Event Emission:** Every execution emits events for real-time WebUI updates
 
-**Core tools (always available):**
+**All registered tools (165):**
 
-| Module | Tools | Purpose |
-|--------|-------|---------|
-| `basic_tools.py` | `calculate`, `get_time`, `get_date`, `system_info`, `echo`, `random_number` | Utility operations |
-| `file_tools.py` | `file_read`, `file_write`, `file_list`, `file_search`, `file_delete`, `file_move`, `file_copy` | Full filesystem interaction with atomic writes, binary detection, chunked streaming, Windows long-path support |
-| `web_tools.py` | `web_search`, `fetch_url`, `read_url` | DuckDuckGo search and page content extraction |
-| `shell_session.py` | `create_session`, `run_command`, `read_session_output`, `list_sessions`, `close_session` | Persistent shell sessions with workspace sandboxing |
-| `git_tools.py` | `git_status`, `git_diff`, `git_log`, `git_commit`, `git_checkout`, `git_branch`, `git_push`, `git_pull` | Git repository management |
-| `github_tools.py` | 8 GitHub API tools | Issues, PRs, repos, workflows |
-| `email_tools.py` | `email_send`, `email_read`, `email_list`, `email_search` | SMTP send + IMAP read/list/search |
-| `research_tools.py` | `deep_research` | Iterative multi-query web research with synthesis |
-| `memory_tools.py` | `memory_store`, `memory_search`, `memory_recall` | Long-term memory management |
-| `goal_tools.py` | `goal_create`, `goal_list`, `goal_update`, `goal_complete`, `goal_delete` | Goal lifecycle management |
-| `system_tools.py` | `get_process_info`, `get_environment_info`, `get_system_info` | System monitoring |
-| `journal_tools.py` | 6 journal tools | Journal CRUD with mood tracking |
-| `integration_tools.py` | 80+ connectors | OAuth-based external service connections |
-| `mcp_tools.py` | `mcp_register_server`, `mcp_unregister_server`, `mcp_list_servers`, `mcp_call_tool` | MCP server lifecycle and tool invocation |
-| `delegate_tools.py` | `delegate_task`, `delegate_batch` | Sub-agent spawn for parallel execution |
-| `code_tools.py` | `execute_code`, `execute_python`, `execute_node`, `execute_bash` | Isolated code execution |
-| `monitor_tools.py` | 7 monitoring tools | File/web watch management, self-improvement log |
-| `vision_tools.py` | `image_understand` | Florence-2 local image analysis |
-| `vision_loop.py` | `start_vision_loop`, `stop_vision_loop` | Continuous vision analysis loop |
-| `image_gen_tools.py` | `generate_image`, `generate_image_variation` | AI image generation |
+| Module | Tools |
+|--------|-------|
+| `file_tools.py` | `file_read`, `file_write`, `file_list`, `file_search`, `file_delete`, `project_read_context`, `project_write_context` |
+| `code_tools.py` | `python_exec` |
+| `shell_session.py` | `shell_run`, `shell_command`, `shell_attach`, `shell_sessions`, `shell_reset` |
+| `git_tools.py` | `git_init`, `git_clone`, `git_status`, `git_diff`, `git_add`, `git_commit`, `git_log`, `git_branch`, `git_push`, `git_pull` |
+| `github_tools.py` | `github_list_repos`, `github_list_issues`, `github_list_prs`, `github_create_issue`, `github_create_pr`, `github_commits`, `github_read_file`, `github_get_repo` |
+| `web_tools.py` | `web_search`, `fetch_url` |
+| `deep_research.py` | `deep_research` |
+| `memory_tools.py` | `remember`, `recall_memories`, `forget_memories`, `memory_set_permanent`, `tree_ingest`, `tree_browse`, `tree_status`, `recent_events` |
+| `goal_tools.py` | `add_goal`, `list_goals`, `update_goal_progress` |
+| `journal_tools.py` | `journal_write`, `journal_read`, `journal_mood_summary` |
+| `monitor_tools.py` | `watch_path`, `list_watches`, `remove_watch`, `monitor_url`, `improvement_log` |
+| `system_tools.py` | `system_status`, `ip_info`, `http_request`, `text_utils`, `unit_convert`, `current_time`, `date_calc`, `random_choice`, `generate_uuid`, `calculator` |
+| `delegate_tools.py` | `delegate_task`, `delegate_batch` |
+| `mcp_tools.py` | `mcp_connect_server`, `mcp_disconnect_server`, `mcp_list_servers`, `mcp_call_tool`, `mcp_auto_connect`, `mcp_remove_server` |
+| `vision_tools.py` | `image_understand` |
+| `image_gen_tools.py` | `generate_image` |
+| `browser_tools.py` | `browser_open`, `browser_click`, `browser_fill_form`, `browser_screenshot` |
+| `email_tools.py` | `email_send`, `email_inbox`, `email_reply`, `email_search` |
+| `presentation_tools.py` | `create_ppt`, `ppt_add_slide`, `list_ppt_templates` |
+| `docx_tools.py` | `docx`, `list_docx_templates` |
+| `ffmpeg_tools.py` | `ffmpeg_convert`, `ffmpeg_extract_audio`, `ffmpeg_create_gif`, `ffmpeg_merge_video`, `ffmpeg_trim` |
+| `fullstack_tools.py` | `fullstack_scaffold`, `fullstack_status`, `fullstack_template` |
+| `pytorch_tools.py` | `pt_model_create`, `pt_model_train`, `pt_model_predict`, `pt_model_evaluate`, `pt_model_save`, `pt_model_load`, `pt_model_info`, `pt_model_convert`, `pt_data_preprocess`, `pt_data_augment`, `pt_image_classification`, `pt_text_classification`, `pt_transfer_learning`, `pt_hyperparameter_tune`, `pt_training_monitor`, `pt_model_visualize`, `pt_ml_info`, `pt_status` |
+| `ml_ai_skill_tools.py` | `ml_cv_workbench`, `ml_data_pipeline`, `ml_deep_learning_trainer`, `ml_distributed_training`, `ml_gan_studio`, `ml_llm_trainer`, `ml_model_optimizer`, `ml_neural_architect`, `ml_nlp_workbench`, `ml_peft_finetuning`, `ml_rl_lab`, `ml_rlhf_lab`, `ml_transformer_architect` |
+| `nexus3d_tools.py` | `nexus3d_info`, `nexus3d_create_mesh`, `nexus3d_transform_mesh`, `nexus3d_csg_boolean`, `nexus3d_create_armature`, `nexus3d_solve_ik`, `nexus3d_animate_procedural`, `nexus3d_physics_simulate`, `nexus3d_raycast`, `nexus3d_material_library`, `nexus3d_cinematic_dof` |
+| `virtual_computer_tools.py` | `vm_start`, `vm_stop`, `vm_restart`, `vm_destroy`, `vm_status`, `vm_execute`, `vm_screenshot`, `vm_vision_loop`, `vm_mouse_click`, `vm_mouse_move`, `vm_type_text`, `vm_press_key`, `vm_upload`, `vm_download`, `vm_install_package` |
+| `integration_tools.py` | `list_available_integrations`, `list_connected_integrations`, `configure_integration`, `call_integration_api`, `integration_health_check`, `integration_webhook_info` |
+| `tasks_tools.py` | `schedule_task`, `list_schedules`, `list_nl_schedules`, `remove_schedule`, `remove_nl_schedule`, `schedule`, `cancel_background_task`, `list_background_tasks` |
 
-**Optional tools (require additional dependencies):**
+**Integration connectors (`integration_tools.py`, 112 services):**
 
-| Module | Dependencies | Tools | Purpose |
-|--------|-------------|-------|---------|
-| `browser_tools.py` | Playwright | `browser_navigate`, `browser_click`, `browser_type`, `browser_screenshot`, etc. | Full browser automation |
-| `fullstack_tools.py` | None | `create_fullstack_app` | Generate React/Vue + FastAPI/Express + DB apps |
-| `presentation_tools.py` | python-pptx | `create_ppt`, `ppt_add_slide` (timeout=300s) | PowerPoint creation with charts, tables, themes |
-| `docx_tools.py` | python-docx | `create_docx`, `docx_add_paragraph`, `docx_add_table` | Word document creation |
-| `ffmpeg_tools.py` | FFmpeg binary | `ffmpeg_convert`, `ffmpeg_extract_audio`, `ffmpeg_create_gif`, etc. | Media processing |
-| `nexus3d_tools.py` | nexus3d | 6 3D tools | Mesh creation, CSG, rendering, animation |
-| `pytorch_tools.py` | PyTorch | `train_model`, `design_architecture`, `fine_tune`, `evaluate_model`, `export_model` | ML model training |
-| `virtual_computer_tools.py` | Docker | 10 VM tools | Container lifecycle + GUI automation |
-| `ml_ai_skill_tools.py` | Various ML deps | `load_ml_skill`, `execute_ml_skill` | ML/AI skill module bridge |
-| `custom_loader.py` | None | `load_custom_tool`, `load_custom_skill` | User-defined tool/script loading |
-
-**Integration connectors (`integration_tools.py`):**
-
-**Communication:** Slack, Discord, Telegram, Twilio, SendGrid, Mailgun
-**Project Management:** GitHub, GitLab, Linear, Jira, Asana, Monday.com, Trello, ClickUp, Notion, Basecamp, Redmine
-**CRM & Sales:** Salesforce, HubSpot, Zendesk, Freshdesk, Intercom, Pipedrive, Close, Help Scout
-**Cloud & DevOps:** AWS (S3, EC2, Lambda, DynamoDB, SQS, SNS), Google Cloud, Cloudflare, DigitalOcean, Vercel, Netlify, Railway, Render, Pulumi, Terraform Cloud
-**Monitoring:** Datadog, Sentry, PagerDuty, New Relic, Grafana, Prometheus, UptimeRobot, Better Uptime
-**Google:** Calendar, Drive, Gmail, Sheets, Docs, Slides, Forms, Meet, Analytics, Ads, Search Console, YouTube
-**Microsoft:** Teams, Outlook, OneDrive, SharePoint, Azure DevOps, Azure Storage, Azure Functions
+**Communication:** Slack, Discord, Telegram, Twilio, SendGrid, Mailgun, Microsoft Teams
+**Project Management:** GitHub, GitLab, Bitbucket, Linear, Jira, Asana, Monday, Trello, ClickUp, Notion, Basecamp, Confluence, Wrike
+**CRM & Sales:** Salesforce, HubSpot, Pipedrive, Close, Zoho
+**Cloud & DevOps:** AWS, AWS S3, Azure, Google Cloud, Cloudflare, DigitalOcean, Vercel, Netlify, Railway, Render, Fly.io, Heroku, Backblaze, Wasabi, Terraform, Ansible, Kubernetes, Docker, Docker Hub, GHCR, Harbor, Portainer, Jenkins, CircleCI, Azure DevOps, Cloudways, GoDaddy, Hostinger, Namecheap, Porkbun
+**Monitoring:** Datadog, Sentry, PagerDuty, New Relic, Grafana, UptimeRobot, Pingdom, Statuspage, Let's Encrypt, ZeroSSL
+**Storage:** Dropbox, Google Drive, Google Sheets, Firebase, Supabase
+**Google:** Calendar, Drive, Sheets, Docs, Slides, Forms, Meet, Analytics, Ads, Search Console, YouTube, Google Play
+**Microsoft:** Teams, Outlook, OneDrive, SharePoint, Azure Storage
 **Design:** Figma, Canva, Adobe Creative Cloud
-**Finance:** Stripe, PayPal, QuickBooks, Xero, FreshBooks, Chargebee
-**Marketing:** Mailchimp, HubSpot Marketing, Google Analytics, Facebook Ads, Twitter/X Ads, LinkedIn Ads
-**Data:** Airtable, Supabase, MongoDB Atlas, Snowflake, BigQuery
-**Other:** Dropbox, Box, Evernote, Spotify, Medium, WordPress, Shopify, Wix, Reddit
+**Finance:** Stripe, PayPal, Lemon Squeezy, BigCommerce, Shopify, WooCommerce
+**AI/ML:** OpenAI, Anthropic, Cohere, HuggingFace, Stability AI, Replicate, Google AI
+**Marketing:** Amplitude, Mixpanel, Segment, PostHog, Heap, Hotjar, Plausible
+**Data:** Airtable, PlanetScale, MongoDB Atlas
+**Other:** IFTTT, Zapier, Make, n8n, App Store, YouTube, Webhook
 
 ### API & WebSocket Server
 
-**Files:** `nexus/api/server.py` (4302 lines), `nexus/api/browser_routes.py`, `nexus/api/vm_routes.py`
+**Files:** `nexus/api/server.py` (1,957 lines), `nexus/api/browser_routes.py`, `nexus/api/vm_routes.py`
 
 **`server.py`** — FastAPI application with:
 
-- **REST Endpoints:** Chat, settings, tools, skills, memories, goals, integrations, users, system status — all with Pydantic validation
+- **REST Endpoints:** Chat, settings, tools, skills, memories, goals, integrations, users, system status — all with Pydantic validation. 149 routes mounted.
 - **WebSocket Chat (`/ws`):** Real-time streaming with event-driven responses — the agent streams thoughts, tool calls, observations, and errors as they happen
 - **Static File Mount:** Serves the WebUI SPA from `webui/` at the root path
 - **Authentication Middleware:** JWT token validation with API key fallback
@@ -519,35 +517,36 @@ Dual-layer long-term memory architecture:
 - **WebSocket Auth:** Token validation via WebSocket query parameter
 - **Encryption at Rest:** API keys encrypted with Fernet (AES-128-CBC), key stored separately in `data/.enc_key`
 - **Environment Variable Priority:** Env vars take highest precedence, never written to `settings.json`
-- **Workspace Sandboxing:** Shell sessions cannot escape `data/workspace/`
+- **Workspace Sandboxing:** All file operations strictly confined to `data/workspace/<project>/` — absolute paths outside the workspace are rejected at the tool layer
 
 ### Self-Improvement System
 
 **Directory:** `nexus/self_improve/`
 
-A comprehensive learning system that runs on a configurable cycle (default: every 30 minutes via the heartbeat scheduler):
-
-| # | Module | What It Does |
-|---|--------|-------------|
-| 1 | **Experience Replay** | Stores high-scoring task executions as reusable trajectories |
-| 2 | **Meta-Learning Engine** | Learns which reasoning approaches work per task type |
-| 3 | **Tool Affinity Analysis** | Co-occurrence matrix, successful vs. failed tool chains, anti-patterns |
-| 4 | **Failure Pattern Recognition** | NLP clustering of failures, generates countermeasures |
-| 5 | **Strategy Injection** | Lifecycle-managed learned strategies injected into system prompt |
-| 6 | **Quality Feedback Loop** | Monitors quality trends, triggers interventions on decline |
-| 7 | **Memory Consolidation** | Deduplication, usage tracking, promotion, pruning |
-| 8 | **Learning Rate & Decay** | Time-weighted confidence scores with evidence adjustment |
-| 9 | **Quality Assessment** | Self-supervised quality scoring of responses |
-| 10 | **Self-Supervised Learning** | Outcome prediction, pattern extraction, negative mining |
-| 11 | **Improvement Pipeline** | End-to-end: assess → identify → generate → test → validate → deploy |
-| 12 | **Real-Time Failure Learning** | Instant heuristic fix generation on tool failures |
-| 13 | **User Satisfaction Detection** | Implicit feedback from conversation signals |
-| 14 | **Prediction Engine** | Tool success prediction and failure risk scoring |
+A comprehensive learning system with a main `run_improvement_pipeline()` entry point plus real-time hooks. Pipeline runs on a configurable cycle (default: every 30 minutes via the heartbeat scheduler).
 
 **Core files:**
-- `__init__.py` — Main pipeline (15-step analysis cycle)
+- `__init__.py` — Main pipeline orchestration (`run_improvement_pipeline`, `_quality_feedback_loop`)
 - `predict.py` — Tool outcome prediction, pattern extraction, success/failure predictors
 - `realtime.py` — Real-time learning: instant fix generation from failure traces
+
+**Capabilities (across the pipeline + real-time module):**
+
+| Capability | What It Does |
+|------------|-------------|
+| **Experience Replay** | Stores high-scoring task executions as reusable trajectories |
+| **Meta-Learning Engine** | Learns which reasoning approaches work per task type |
+| **Tool Affinity Analysis** | Co-occurrence matrix, successful vs. failed tool chains, anti-patterns |
+| **Failure Pattern Recognition** | NLP clustering of failures, generates countermeasures |
+| **Strategy Injection** | Lifecycle-managed learned strategies injected into system prompt |
+| **Quality Feedback Loop** | Monitors quality trends, triggers interventions on decline |
+| **Memory Consolidation** | Deduplication, usage tracking, promotion, pruning |
+| **Learning Rate & Decay** | Time-weighted confidence scores with evidence adjustment |
+| **Quality Assessment** | Self-supervised quality scoring of responses |
+| **Self-Supervised Learning** | Outcome prediction, pattern extraction, negative mining |
+| **Real-Time Failure Learning** | Instant heuristic fix generation on tool failures |
+| **User Satisfaction Detection** | Implicit feedback from conversation signals |
+| **Prediction Engine** | Tool success prediction and failure risk scoring |
 
 **Guardrails:** Only writes to database (never modifies code/configuration on disk), uses cheaper `memory_model` for LLM calls, self-learned memory cap (50 max), strategy content capped at 200 characters.
 
@@ -572,32 +571,34 @@ Comprehensive runtime monitoring:
 - Anomaly detection: stale goals (7+ days), quality decline, memory bloat, low disk, missing API keys
 - Self-awareness context string injected into system prompt
 
-### Task Queue (Celery + Redis)
+### Heartbeat & Task Queue
 
-**Files:** `nexus/celery_app.py`, `nexus/tasks/`
+**Files:** `nexus/heartbeat.py`, `nexus/celery_app.py`, `nexus/tasks/`
 
-Celery with Redis as broker and result backend:
+The `heartbeat.py` module runs 10 scheduled tasks as in-process asyncio jobs (no Celery worker required). Celery + Redis is an optional optimization for distributed deployments.
 
 | Task | Interval | Purpose |
 |------|----------|---------|
 | `check_data_integrity` | 5 min | SQLite health check |
-| `process_scheduled_tasks` | 30s | Execute due scheduled tasks |
-| `process_nl_schedules` | 30s | NL-defined schedule processing |
+| `process_scheduled_tasks` | 30 s | Execute due scheduled tasks |
+| `process_nl_schedules` | 30 s | NL-defined schedule processing |
 | `process_incomplete_goals` | 2 min | Check stalled goals |
-| `file_watcher_tick` | 30s | Poll watched directories |
-| `web_monitor_tick` | 60s | Monitor watched web pages |
+| `file_watcher_tick` | 30 s | Poll watched directories |
+| `web_monitor_tick` | 60 s | Monitor watched web pages |
 | `self_improvement_run` | 30 min | Self-improvement pipeline |
-| `health_summary` | 30s | Health status events |
+| `environment_check` | 5 min | Environment anomaly detection |
+| `health_summary` | 30 s | Health status events |
+| `process_active_triggers` | 60 s | Process event triggers |
 | `memory_curve_pruning` | 30 min | Forgetting-curve pruning |
 
-**Event Bridge:** Redis pubsub relays events from Celery workers to the main process, keeping the Web UI updated during background task execution.
+**Event Bridge:** When Celery is enabled, Redis pubsub relays events from Celery workers to the main process, keeping the Web UI updated during background task execution.
 
 ### Virtual Computer
 
 **Files:** `nexus/virtual_computer/container.py`, `nexus/virtual_computer/setup-vm.sh`
 
 Docker-based sandboxed desktop environment:
-- Container lifecycle: create, start, stop, delete via REST API
+- Container lifecycle: create, start, stop, restart, destroy via REST API
 - VNC streaming to Web UI via WebSocket
 - Vision-loop GUI automation: agent "sees" the VM screen and issues click/type/scroll commands
 - File transfer: upload from host, download from container
@@ -631,8 +632,8 @@ On-device vision using **Microsoft Florence-2** (230M params) via HuggingFace Tr
 Startup sequence:
 1. Vision dependency check (Florence-2 packages)
 2. SQLite database initialization with schema auto-creation
-3. Heartbeat/Celery beat scheduler start
-4. Uvicorn server on `127.0.0.1:8765` with WebSocket support
+3. Heartbeat scheduler start (10 in-process tasks)
+4. Uvicorn server on `127.0.0.1:8765` (host=`127.0.0.1`, port=`8765`, `reload=False`, `log_level="info"`) with WebSocket support
 5. Graceful shutdown: DB pool close, heartbeat stop, LLM client shutdown
 
 ---
@@ -713,13 +714,13 @@ Key configuration categories:
 |----------|---------|
 | **Provider** | `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `TOGETHER_API_KEY`, `NVIDIA_API_KEY`, `CUSTOM_API_KEY`, `CUSTOM_BASE_URL` |
 | **Model** | `default_model`, `memory_model` |
-| **Generation** | `temperature` (default 0.3), `max_tokens`, `top_p` |
+| **Generation** | `temperature` (default 0.7), `max_tokens`, `top_p` |
 | **Agent Identity** | `agent_name`, `personality`, `traits`, `communication_style` |
-| **Reasoning** | `max_nexus_iterations` (default 9999), `adaptive_iterations` (default True), `loop_detection_threshold` |
+| **Reasoning** | `max_nexus_iterations` (default 9999), `adaptive_iterations` (default True), `loop_detection_threshold` (default 3), `loop_detection_fast` (default True) |
 | **ADHD** | `enable_adhd_reasoning` (default True), `adhd_complexity_min` (default "medium"), `adhd_max_analogies` (default 3) |
 | **Memory** | `enable_long_term_memory`, `memory_retrieval_k` (default 6), `embedding_model`, `enable_memory_tree` |
 | **Speed** | `cache_llm_responses`, `parallel_tool_execution`, `fast_response_mode` |
-| **Task Execution** | `max_tool_calls_per_task`, `max_cost_per_task_usd`, `max_task_duration_seconds` (1800) |
+| **Task Execution** | `max_tool_calls_per_task` (default 50), `max_cost_per_task_usd` (default 2.0), `max_task_duration_seconds` (default 1800) |
 | **Security** | `enable_auth`, `cors_origins` |
 | **Celery** | `enable_celery`, `redis_url` |
 | **Self-Improvement** | `enable_self_improvement` |
@@ -732,9 +733,9 @@ Key configuration categories:
 |-------|-----------|
 | **Backend Framework** | FastAPI + Uvicorn |
 | **Database** | SQLite (via aiosqlite, async) — optional: PostgreSQL |
-| **Task Queue** | Celery + Redis (optional) |
+| **Task Queue** | Celery + Redis (optional); in-process asyncio heartbeat by default |
 | **WebSocket** | FastAPI WebSocket + custom event bus |
-| **Frontend** | Vanilla JavaScript SPA (no framework) |
+| **Frontend** | Vanilla JavaScript SPA (no framework) — 23 JS modules |
 | **LLM Providers** | OpenRouter, OpenAI, Together AI, NVIDIA NIM, Groq, custom endpoints |
 | **Local Vision** | Microsoft Florence-2 (HuggingFace Transformers) |
 | **ML Training** | PyTorch, scikit-learn, transformers, ONNX |
@@ -749,4 +750,4 @@ Key configuration categories:
 
 ## License
 
-All rights reserved. Hyper Nexus is proprietary software. Unauthorized copying, distribution, or use is prohibited.
+Hyper Nexus is released under the **MIT License** — see [LICENSE](LICENSE) for full text. You are free to use, modify, and distribute this software, provided the original copyright and license notice are preserved.
