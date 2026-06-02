@@ -220,9 +220,6 @@ function initNav() {
   });
 }
 
-// ------- Panel switching (also defined above in SHELL section) -------
-function initNav() { /* duplicate removed — see top of file */ }
-
 // ------- WS status classes -------
 function initWsStatus() {
   const statusEl = document.getElementById('ws-status');
