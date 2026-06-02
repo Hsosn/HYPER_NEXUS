@@ -92,7 +92,7 @@ Hyper Nexus is a **self-hosted, autonomous AI agent platform** that goes far bey
 ```
 hyper-nexus/
 ├── run.py                          # Entry point — starts Uvicorn with DB init (host 127.0.0.1, port 8765)
-├── docker-compose.yml              # Optional: PostgreSQL 16 + Redis 7 containers
+├── docker-compose.yml              # Optional: Redis 7 container (Celery broker + event bus)
 ├── docker/                         # Database init scripts
 ├── requirements.txt                # Python dependencies
 ├── start.bat / start.ps1           # Windows startup scripts
@@ -107,7 +107,7 @@ hyper-nexus/
 │   ├── heartbeat.py                # In-process scheduled tasks (10 jobs)
 │   │
 │   ├── api/                        # FastAPI app: REST + WebSocket
-│   │   ├── server.py               # Main server (1957 lines)
+│   │   ├── server.py               # Main server (~4,300 lines, 119 routes)
 │   │   ├── browser_routes.py       # Live browser preview (WebSocket streaming)
 │   │   └── vm_routes.py            # Virtual computer (REST + WebSocket)
 │   │
@@ -117,17 +117,17 @@ hyper-nexus/
 │   │   └── vision_local.py         # On-device vision (Florence-2, no external API)
 │   │
 │   ├── reasoning/
-│   │   ├── engine.py               # Nexus Framework adaptive loop (2805 lines)
-│   │   └── adhd_module.py          # ADHD cross-domain creative reasoning (801 lines)
+│   │   ├── engine.py               # Nexus Framework adaptive loop
+│   │   └── adhd_module.py          # ADHD cross-domain creative reasoning (942 lines)
 │   │
 │   ├── memory/
-│   │   ├── database.py             # SQLite async layer (1764 lines)
+│   │   ├── database.py             # SQLite async layer (~2,100 lines)
 │   │   ├── memory.py               # Flat semantic memory with embedding recall
 │   │   ├── memory_tree.py          # Hierarchical tree-based long-term memory
 │   │   └── tree_db.py              # SQLite backing for memory tree
 │   │
 │   ├── tools/
-│   │   ├── registry.py             # Tool registry: middleware, cache, rate-limit (1612 lines)
+│   │   ├── registry.py             # Tool registry: middleware, cache, rate-limit (~1,900 lines)
 │   │   └── builtin/                # 32 modules providing 165 tools
 │   │
 │   ├── tasks/
@@ -164,17 +164,17 @@ hyper-nexus/
 │
 ├── nexus3d_skills/                 # ═══ 12 AGENT-TRIGGERABLE 3D SKILLS ═══
 │
-├── ml_ai_skills/                   # ═══ 13 AGENT-TRIGGERABLE ML/AI SKILLS ═══
+├── nexus_ml_skills/                # ═══ 13 AGENT-TRIGGERABLE ML/AI SKILLS ═══
 │
 └── webui/                          # ═══ FRONTEND (vanilla JS SPA) ═══
     ├── index.html                  # Main entry point
     ├── css/                        # sci-fi theme + panel styles
-    └── js/                         # 23 modules: ws, state, panels, utils
+    └── js/                         # modules: ws, state, panels, utils
 ```
 
 **Key architectural features:**
 
-- **Zero-extras startup:** `python run.py` — SQLite (not PostgreSQL), embedded asyncio heartbeat (no Celery worker required), static SPA served by FastAPI. Docker/Redis/Celery are optional optimizations.
+- **Zero-extras startup:** `python run.py` boots straight into SQLite + asyncio heartbeat + the static SPA. Docker/Redis/Celery are optional optimizations.
 - **Real-time WebSocket streaming:** Every `emit()` call streams events to all connected browsers. The WebUI updates in real time — thoughts, tool calls, tool results, errors, self-improvement events.
 - **Event-driven architecture:** The async event bus (`nexus/events.py`) decouples all subsystems. The reasoning engine, tool system, watchers, self-improvement, and WebSocket relay all communicate through it.
 - **Session-scoped engines:** Each chat session gets its own `ReasoningEngine` instance cached in `server.py`, with its own memory, context, and tool boost state.
@@ -193,7 +193,7 @@ hyper-nexus/
 
 | Dependency | Purpose |
 |-----------|---------|
-| **Docker** | PostgreSQL, Redis, and virtual computer containers |
+| **Docker** | Redis (Celery broker), and the optional virtual computer container |
 | **Playwright** (`playwright install chromium`) | Browser automation and live browser preview |
 | **FFmpeg** (system binary) | Media processing — convert, trim, GIF creation |
 | **PyTorch** (included in requirements.txt) | ML/AI training, transformers, neural architecture design |
@@ -250,7 +250,7 @@ playwright install chromium
 | Linux | `sudo apt install ffmpeg` |
 | Windows | `choco install ffmpeg` or download from [ffmpeg.org](https://ffmpeg.org) |
 
-**Optional — Docker (for Redis, PostgreSQL, virtual computer):**
+**Optional — Docker (for Redis, virtual computer):**
 ```bash
 docker compose up -d
 ```
@@ -352,7 +352,7 @@ The **Nexus Framework** is the platform's adaptive reasoning core — a single l
 
 ### ADHD Cross-Domain Reasoning Module
 
-**File:** `nexus/reasoning/adhd_module.py` (801 lines)
+**File:** `nexus/reasoning/adhd_module.py` (942 lines)
 
 A creative reasoning booster that mimics the ADHD brain's superpower: hyper-connecting seemingly unrelated knowledge domains.
 
@@ -417,7 +417,7 @@ Dual-layer long-term memory architecture:
 - SQLite via `aiosqlite` (async) with single-writer connection pattern
 - Schema auto-creation on `init()` — tables: sessions, messages, memories, goals, tasks, tool_executions, tool_profiles, notifications, file_watches, web_monitors, nl_schedules, integrations, triggers, memory_tree_*, quality_scores, task_checkpoints, and more
 - All queries use `$N` positional parameter syntax
-- Full-text search via PostgreSQL ILIKE (legacy) and SQLite LIKE
+- Full-text search via SQLite LIKE
 
 ### Tool System
 
@@ -494,7 +494,7 @@ Dual-layer long-term memory architecture:
 
 **`server.py`** — FastAPI application with:
 
-- **REST Endpoints:** Chat, settings, tools, skills, memories, goals, integrations, users, system status — all with Pydantic validation. 149 routes mounted.
+- **REST Endpoints:** Chat, settings, tools, skills, memories, goals, integrations, users, system status — all with Pydantic validation. 144 routes across `server.py`, `browser_routes.py`, and `vm_routes.py`.
 - **WebSocket Chat (`/ws`):** Real-time streaming with event-driven responses — the agent streams thoughts, tool calls, observations, and errors as they happen
 - **Static File Mount:** Serves the WebUI SPA from `webui/` at the root path
 - **Authentication Middleware:** JWT token validation with API key fallback
@@ -677,7 +677,7 @@ A complete pure Python 3D engine with zero external GPU dependencies.
 | **Scene Composer** | Scene layout — object placement, grouping, lighting setup, environment staging |
 | **Studio Renderer** | Multi-pass rendering, denoising, compositing, output formatting |
 
-## ML/AI Engineering Suite — `ml_ai_skills/`
+## ML/AI Engineering Suite — `nexus_ml_skills/`
 
 13 specialized skill modules:
 
@@ -732,7 +732,7 @@ Key configuration categories:
 | Layer | Technology |
 |-------|-----------|
 | **Backend Framework** | FastAPI + Uvicorn |
-| **Database** | SQLite (via aiosqlite, async) — optional: PostgreSQL |
+| **Database** | SQLite (via aiosqlite, async) |
 | **Task Queue** | Celery + Redis (optional); in-process asyncio heartbeat by default |
 | **WebSocket** | FastAPI WebSocket + custom event bus |
 | **Frontend** | Vanilla JavaScript SPA (no framework) — 23 JS modules |
