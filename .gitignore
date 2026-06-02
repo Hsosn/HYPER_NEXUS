@@ -58,5 +58,13 @@ Thumbs.db
 Desktop.ini
 ._*
 
+# ── Binaries (download or install out-of-band; never commit blobs) ───────────
+*.exe
+*.dll
+*.bin
+*.pyd
+*.so
+*.dylib
+
 # ── Dev debug artifacts ──────────────────────────────────────────────────────
 _debug_snippet.txt
