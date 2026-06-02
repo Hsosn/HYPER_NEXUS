@@ -950,6 +950,281 @@ export function getTriggerContext() {
   return ctx || '';
 }
 
+// ── Automation Drawer (file watches / web monitors / schedules / self-improvement) ──
+//
+// Wires up the previously-unused API endpoints:
+//   GET  /api/watches
+//   POST /api/watches
+//   DELETE /api/watches/{watch_id}
+//   GET  /api/monitors
+//   POST /api/monitors
+//   DELETE /api/monitors/{monitor_id}
+//   GET  /api/schedules
+//   DELETE /api/schedules/{schedule_id}
+//   GET  /api/improvements
+//   POST /api/improvements/trigger
+
+const AUTOMATION_SECTIONS = [
+  {
+    id: 'watches',
+    title: 'File Watches',
+    desc: 'Watch files / directories for changes. The agent is notified on every create / modify / delete.',
+    list:   '/api/watches',
+    delete: (id) => `/api/watches/${id}`,
+    add:    {
+      endpoint: '/api/watches',
+      method: 'POST',
+      body: { path: '', label: '' },
+      fields: [
+        { id: 'path',  label: 'Path (absolute or workspace-relative)', placeholder: 'C:\\Users\\me\\Documents or data/workspace/myapp' },
+        { id: 'label', label: 'Label (optional)',                        placeholder: 'My Documents' },
+      ],
+    },
+    emptyMsg: 'No file watches yet',
+  },
+  {
+    id: 'monitors',
+    title: 'Web Monitors',
+    desc: 'Poll a URL on a schedule. The agent is notified when its content hash changes.',
+    list:   '/api/monitors',
+    delete: (id) => `/api/monitors/${id}`,
+    add:    {
+      endpoint: '/api/monitors',
+      method: 'POST',
+      body: { url: '', interval_seconds: 3600, label: '' },
+      fields: [
+        { id: 'url',             label: 'URL',                placeholder: 'https://example.com/page' },
+        { id: 'interval_seconds',label: 'Interval (seconds)', placeholder: '3600', type: 'number' },
+        { id: 'label',           label: 'Label (optional)',   placeholder: 'Competitor pricing page' },
+      ],
+    },
+    emptyMsg: 'No web monitors yet',
+  },
+  {
+    id: 'schedules',
+    title: 'Scheduled Tasks',
+    desc: 'NL-defined scheduled tasks (e.g. "every morning at 9am, run X"). Managed by the agent via the `schedule` tool.',
+    list:   '/api/schedules',
+    delete: (id) => `/api/schedules/${id}`,
+    add: null,  // Schedules are created by the agent, not the user
+    emptyMsg: 'No scheduled tasks yet — ask the agent to schedule one',
+  },
+  {
+    id: 'improvements',
+    title: 'Self-Improvement',
+    desc: 'Run the self-improvement pipeline manually, or view the last 20 log entries.',
+    list:   '/api/improvements',
+    delete: null,  // No delete endpoint
+    add: null,    // Manual trigger only
+    emptyMsg: 'No improvement runs yet',
+  },
+];
+
+export async function initAutomation() {
+  const btn = document.getElementById('automation-trigger');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    createDrawer(
+      'Automation',
+      `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+      (body, close) => buildAutomationBody(body, close)
+    );
+  });
+}
+
+function buildAutomationBody(body, closeFn) {
+  body.innerHTML = '';
+  body.classList.add('drw-auto-body');
+
+  // Render each section asynchronously
+  AUTOMATION_SECTIONS.forEach(section => {
+    const sec = document.createElement('div');
+    sec.className = 'drw-auto-section';
+    sec.innerHTML = `
+      <div class="drw-auto-header">
+        <h3 class="drw-auto-title">${section.title}</h3>
+        <p class="drw-auto-desc">${section.desc}</p>
+      </div>
+      <div class="drw-auto-list" id="auto-list-${section.id}">
+        <div class="drw-auto-loading">Loading…</div>
+      </div>
+      <div class="drw-auto-actions" id="auto-actions-${section.id}"></div>
+    `;
+    body.appendChild(sec);
+    loadSection(section, sec);
+  });
+}
+
+async function loadSection(section, secEl) {
+  const listEl   = secEl.querySelector(`#auto-list-${section.id}`);
+  const actionsEl= secEl.querySelector(`#auto-actions-${section.id}`);
+
+  // ── Load list ────────────────────────────────────────────────
+  let items = [];
+  try {
+    const res = await api(section.list);
+    items = Array.isArray(res) ? res : [];
+  } catch (e) {
+    listEl.innerHTML = `<div class="drw-auto-error">Failed to load: ${e.message}</div>`;
+    return;
+  }
+
+  // Special case for self-improvement: also offer a "Run now" button
+  if (section.id === 'improvements') {
+    renderImprovements(items, listEl, actionsEl);
+  } else {
+    renderList(section, items, listEl);
+    if (section.add) renderAddForm(section, actionsEl, () => loadSection(section, secEl));
+  }
+}
+
+function renderList(section, items, listEl) {
+  if (!items.length) {
+    listEl.innerHTML = `<div class="drw-auto-empty">${section.emptyMsg}</div>`;
+    return;
+  }
+  listEl.innerHTML = '';
+  items.forEach(it => {
+    const row = document.createElement('div');
+    row.className = 'drw-auto-row';
+    const id = it.id ?? it.watch_id ?? it.monitor_id ?? it.schedule_id;
+    const label = (it.label || it.name || it.url || it.path || '').toString();
+    const enabled = it.enabled !== false;
+    const meta = [];
+    if (it.path)        meta.push(`<code>${escapeHtml(it.path)}</code>`);
+    if (it.url)         meta.push(`<a href="${escapeAttr(it.url)}" target="_blank" rel="noreferrer">${escapeHtml(it.url)}</a>`);
+    if (it.interval_seconds) meta.push(`every ${formatInterval(it.interval_seconds)}`);
+    if (it.last_checked) meta.push(`checked ${it.last_checked}`);
+    if (it.next_run)    meta.push(`next ${it.next_run}`);
+    if (it.expression)  meta.push(`<code>${escapeHtml(it.expression)}</code>`);
+    row.innerHTML = `
+      <div class="drw-auto-row-main">
+        <div class="drw-auto-row-title">
+          <span class="drw-auto-dot ${enabled ? 'on' : 'off'}" title="${enabled ? 'Active' : 'Disabled'}"></span>
+          ${escapeHtml(label || `(${id})`)}
+        </div>
+        <div class="drw-auto-row-meta">${meta.join(' &middot; ')}</div>
+      </div>
+      ${section.delete ? `<button class="drw-auto-del" title="Remove" data-id="${id}">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+      </button>` : ''}
+    `;
+    if (section.delete) {
+      row.querySelector('.drw-auto-del').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!confirm(`Remove this ${section.id.replace(/s$/,'')}?`)) return;
+        try {
+          await api(section.delete(id), { method: 'DELETE' });
+          toast('Removed', 'success');
+          loadSection(section, listEl.parentElement);
+        } catch (err) { toast('Failed: ' + err.message, 'error'); }
+      });
+    }
+    listEl.appendChild(row);
+  });
+}
+
+function renderAddForm(section, actionsEl, onAdded) {
+  const form = document.createElement('form');
+  form.className = 'drw-auto-form';
+  form.innerHTML = `
+    <div class="drw-auto-form-fields">
+      ${section.add.fields.map(f => `
+        <input
+          type="${f.type || 'text'}"
+          name="${f.id}"
+          placeholder="${escapeAttr(f.label + (f.placeholder ? ' — ' + f.placeholder : ''))}"
+          required
+        />`).join('')}
+    </div>
+    <button type="submit" class="drw-auto-add">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add
+    </button>
+  `;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const params = new URLSearchParams();
+    for (const f of section.add.fields) {
+      let v = fd.get(f.id);
+      if (v == null || v === '') continue;
+      if (f.type === 'number') v = parseInt(v, 10);
+      params.set(f.id, v);
+    }
+    try {
+      // API uses query parameters (not JSON body) for these POSTs
+      await api(`${section.add.endpoint}?${params.toString()}`, { method: 'POST' });
+      toast(`${section.title.replace(/s$/, '')} added`, 'success');
+      form.reset();
+      onAdded();
+    } catch (err) { toast('Failed: ' + err.message, 'error'); }
+  });
+  actionsEl.appendChild(form);
+}
+
+function renderImprovements(items, listEl, actionsEl) {
+  if (!items.length) {
+    listEl.innerHTML = `<div class="drw-auto-empty">${'No improvement runs yet'}</div>`;
+  } else {
+    listEl.innerHTML = '';
+    items.slice(0, 20).forEach(it => {
+      const row = document.createElement('div');
+      row.className = 'drw-auto-row';
+      const ts = it.started_at || it.created_at || it.timestamp || it.id;
+      const what = it.kind || it.type || it.cycle || 'cycle';
+      const status = it.status || (it.completed_at ? 'done' : 'running');
+      row.innerHTML = `
+        <div class="drw-auto-row-main">
+          <div class="drw-auto-row-title">
+            <span class="drw-auto-dot ${status === 'done' || status === 'ok' ? 'on' : 'off'}"></span>
+            ${escapeHtml(what)} <span class="drw-auto-tag">${escapeHtml(status)}</span>
+          </div>
+          <div class="drw-auto-row-meta">${escapeHtml(String(ts))}</div>
+        </div>`;
+      listEl.appendChild(row);
+    });
+  }
+  // Run-now button
+  const runBtn = document.createElement('button');
+  runBtn.className = 'drw-auto-add';
+  runBtn.innerHTML = `
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    Run self-improvement now`;
+  runBtn.addEventListener('click', async () => {
+    runBtn.disabled = true;
+    runBtn.textContent = 'Triggering…';
+    try {
+      await api('/api/improvements/trigger', { method: 'POST' });
+      toast('Self-improvement cycle triggered', 'success');
+      // Refresh the list after a short delay
+      setTimeout(() => {
+        const sec = listEl.closest('.drw-auto-section');
+        if (sec) loadSection(AUTOMATION_SECTIONS.find(s => s.id === 'improvements'), sec);
+      }, 1500);
+    } catch (e) {
+      toast('Failed: ' + e.message, 'error');
+    } finally {
+      runBtn.disabled = false;
+      runBtn.innerHTML = `
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Run self-improvement now`;
+    }
+  });
+  actionsEl.appendChild(runBtn);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s) { return escapeHtml(s); }
+function formatInterval(sec) {
+  if (sec < 60)   return `${sec}s`;
+  if (sec < 3600) return `${Math.round(sec/60)}m`;
+  if (sec < 86400)return `${Math.round(sec/3600)}h`;
+  return `${Math.round(sec/86400)}d`;
+}
+
 // ── Create Custom API Integration ──────────────────────────────────────────────
 function openCreateCustomApiModal(grid) {
   const root = document.getElementById('modal-root') || document.body;

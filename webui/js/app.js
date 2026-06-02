@@ -13,7 +13,7 @@ import { initMetrics }   from './panels/metrics.js';
 import { initSettings }  from './panels/settings.js';
 import { initWorkspace }     from './panels/workspace.js';
 import { initNotifications } from './panels/notifications.js';
-import { initIntegrations, initTriggers } from './panels/integrations.js';
+import { initIntegrations, initTriggers, initAutomation } from './panels/integrations.js';
 import { initMCP } from './panels/mcp.js';
 import { initBrowserLive }   from './panels/browser-live.js';
 import { initVirtualComputer } from './panels/virtual-computer.js';
@@ -214,6 +214,7 @@ async function startApp() {
     ['Notifications', () => initNotifications()],
     ['Integrations', () => initIntegrations()],
     ['Triggers', () => initTriggers()],
+    ['Automation', () => initAutomation()],
     ['MCP', () => initMCP()],
     ['BrowserLive', () => initBrowserLive()],
     ['VirtualComputer', () => initVirtualComputer()],
