@@ -18,8 +18,192 @@ import { initMCP } from './panels/mcp.js';
 import { initBrowserLive }   from './panels/browser-live.js';
 import { initVirtualComputer } from './panels/virtual-computer.js';
 import { initVMLiveViewer }   from './vm-live-viewer.js';
-import { initParticles } from './particles.js';
 import { api, el, setAuthToken, getAuthToken } from './utils.js';
+
+// ════════════════════════════════════════════════════════════════════════════
+// COMMAND PALETTE (Cmd/Ctrl+K) — switch panels + run quick commands
+// ════════════════════════════════════════════════════════════════════════════
+const PALETTE_COMMANDS = [
+  { id: 'panel:chat',            label: '→ Chat',                hint: '1',      keywords: 'chat conversation main' },
+  { id: 'panel:tools',           label: '→ Tools',               hint: '2',      keywords: 'tools tool registry' },
+  { id: 'panel:skills',          label: '→ Skills',              hint: '3',      keywords: 'skills ml 3d' },
+  { id: 'panel:memory',          label: '→ Memory',              hint: '4',      keywords: 'memory memories' },
+  { id: 'panel:goals',           label: '→ Goals',               hint: '5',      keywords: 'goals tasks' },
+  { id: 'panel:activity',        label: '→ Activity',            hint: '6',      keywords: 'activity log' },
+  { id: 'panel:workspace',       label: '→ Workspace',           hint: '7',      keywords: 'workspace files' },
+  { id: 'panel:metrics',         label: '→ Metrics',             hint: '8',      keywords: 'metrics tokens cost' },
+  { id: 'panel:settings',        label: '→ Settings',            hint: '9',      keywords: 'settings config' },
+  { id: 'open:integrations',     label: '→ Integrations',        hint: 'I',      keywords: 'integrations services oauth' },
+  { id: 'open:triggers',         label: '→ Triggers',            hint: 'T',      keywords: 'triggers webhooks' },
+  { id: 'open:automation',       label: '→ Automation',          hint: 'A',      keywords: 'automation watches monitors schedules' },
+  { id: 'open:mcp',              label: '→ MCP Servers',         hint: 'M',      keywords: 'mcp servers model context' },
+  { id: 'open:browser',          label: '→ Browser Live View',   hint: 'B',      keywords: 'browser live view' },
+  { id: 'open:vm',               label: '→ Virtual Computer',    hint: 'V',      keywords: 'vm virtual computer desktop' },
+  { id: 'open:vmviewer',         label: '→ VM Live Viewer',      hint: '⇧V',     keywords: 'vm live viewer vnc' },
+  { id: 'open:notifications',    label: '→ Notifications',       hint: 'N',      keywords: 'notifications inbox' },
+  { id: 'action:newchat',        label: '+ New Chat',            hint: '⌘N',     keywords: 'new chat session' },
+  { id: 'action:clear',          label: '✕ Clear all chats',     hint: '',       keywords: 'clear all delete wipe' },
+];
+
+let paletteIndex = 0;
+let paletteMatches = [];
+
+function openPalette() {
+  const palette = document.getElementById('nx-palette');
+  if (!palette) return;
+  palette.classList.add('open');
+  const input = document.getElementById('nx-palette-input');
+  input.value = '';
+  paletteMatches = PALETTE_COMMANDS.slice();
+  paletteIndex = 0;
+  renderPalette();
+  setTimeout(() => input.focus(), 0);
+}
+
+function closePalette() {
+  const palette = document.getElementById('nx-palette');
+  if (palette) palette.classList.remove('open');
+  const input = document.getElementById('input');
+  if (input) input.focus();
+}
+
+function renderPalette() {
+  const list = document.getElementById('nx-palette-list');
+  if (!list) return;
+  if (paletteMatches.length === 0) {
+    list.innerHTML = '<div class="nx-palette-empty">no matches</div>';
+    return;
+  }
+  list.innerHTML = paletteMatches.map((c, i) => `
+    <div class="nx-palette-row ${i === paletteIndex ? 'active' : ''}" data-idx="${i}">
+      <span class="nx-row-id">[${c.id}]</span>
+      <span>${c.label}</span>
+      <span class="nx-row-hint">${c.hint || ''}</span>
+    </div>
+  `).join('');
+  list.querySelectorAll('.nx-palette-row').forEach(row => {
+    row.addEventListener('click', () => {
+      paletteIndex = Number(row.dataset.idx);
+      runPaletteCommand();
+    });
+  });
+}
+
+function filterPalette(q) {
+  q = (q || '').toLowerCase().trim();
+  if (!q) { paletteMatches = PALETTE_COMMANDS.slice(); }
+  else {
+    paletteMatches = PALETTE_COMMANDS.filter(c =>
+      c.label.toLowerCase().includes(q) ||
+      c.id.toLowerCase().includes(q) ||
+      (c.keywords || '').toLowerCase().includes(q)
+    );
+  }
+  paletteIndex = 0;
+  renderPalette();
+}
+
+function runPaletteCommand() {
+  const cmd = paletteMatches[paletteIndex];
+  if (!cmd) return;
+  closePalette();
+  const [kind, target] = cmd.id.split(':');
+  if (kind === 'panel') {
+    const nav = document.querySelector(`.nav-item[data-panel="${target}"]`);
+    if (nav) nav.click();
+  } else if (kind === 'open') {
+    const triggerMap = {
+      integrations: 'integrations-trigger',
+      triggers: 'triggers-trigger',
+      automation: 'automation-trigger',
+      mcp: 'mcp-trigger',
+      browser: 'browser-live-toggle',
+      vm: 'vm-live-toggle', // Note: there are two vm triggers; vm-live-toggle opens live viewer
+      vmviewer: 'vm-live-toggle',
+      notifications: 'notifications-trigger',
+    };
+    const btnId = triggerMap[target];
+    if (btnId) {
+      const btn = document.getElementById(btnId);
+      if (btn) btn.click();
+    }
+  } else if (kind === 'action') {
+    if (target === 'newchat') {
+      const b = document.getElementById('new-chat');
+      if (b) b.click();
+    } else if (target === 'clear') {
+      const b = document.getElementById('clear-all-chats');
+      if (b) b.click();
+    }
+  }
+}
+
+function initPalette() {
+  document.addEventListener('keydown', (e) => {
+    const palette = document.getElementById('nx-palette');
+    const isOpen = palette && palette.classList.contains('open');
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      if (isOpen) closePalette(); else openPalette();
+      return;
+    }
+    if (!isOpen) return;
+    if (e.key === 'Escape') { closePalette(); return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); paletteIndex = Math.min(paletteIndex + 1, paletteMatches.length - 1); renderPalette(); }
+    if (e.key === 'ArrowUp')   { e.preventDefault(); paletteIndex = Math.max(paletteIndex - 1, 0); renderPalette(); }
+    if (e.key === 'Enter')     { e.preventDefault(); runPaletteCommand(); }
+  });
+  const input = document.getElementById('nx-palette-input');
+  if (input) input.addEventListener('input', (e) => filterPalette(e.target.value));
+  // close on backdrop click
+  document.getElementById('nx-palette')?.addEventListener('click', (e) => {
+    if (e.target.id === 'nx-palette') closePalette();
+  });
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// HEADER + STATUS BAR — reflect current state in the new chrome
+// ════════════════════════════════════════════════════════════════════════════
+function updateHeaderPanel() {
+  const cur = document.getElementById('nx-current-panel');
+  const st  = document.getElementById('nx-st-panel');
+  if (!cur || !st) return;
+  const name = (state.activePanel || 'chat').toUpperCase();
+  cur.textContent = `[${name}]`;
+  st.textContent  = name;
+}
+
+function updateStatusBar() {
+  // Time
+  const t = document.getElementById('nx-st-time');
+  if (t) {
+    const d = new Date();
+    t.textContent = d.toISOString().substring(11, 19);
+  }
+  // WS state
+  const ws = document.getElementById('ws-status');
+  const wsLabel = document.getElementById('nx-hdr-ws-label');
+  const wsDot   = document.getElementById('nx-hdr-ws');
+  if (ws && wsLabel && wsDot) {
+    const txt = (ws.textContent || '').toLowerCase();
+    const online = txt.includes('connect') || txt === 'connected' || txt === 'online';
+    const error  = txt.includes('reconnect') || txt.includes('error');
+    wsDot.className = 'nx-status-dot ' + (error ? 'error' : online ? 'online' : 'warn');
+    wsLabel.textContent = online ? 'online' : error ? 'reconnect' : 'connecting';
+  }
+}
+
+function startStatusTicker() {
+  updateStatusBar();
+  updateHeaderPanel();
+  setInterval(updateStatusBar, 1000);
+  // Re-sync panel label whenever nav changes
+  document.addEventListener('panel:shown', updateHeaderPanel);
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// NAVIGATION (extended — also reflects in header + opens sessions drawer)
+// ════════════════════════════════════════════════════════════════════════════
 
 // ------- Panel switching -------
 function initNav() {
@@ -35,6 +219,9 @@ function initNav() {
     });
   });
 }
+
+// ------- Panel switching (also defined above in SHELL section) -------
+function initNav() { /* duplicate removed — see top of file */ }
 
 // ------- WS status classes -------
 function initWsStatus() {
@@ -177,11 +364,12 @@ function showWelcomeModal() {
 async function startApp() {
   console.log('[boot] Starting panels...');
 
-  // Init sci-fi particle background
+  // Init the new shell chrome (palette, status ticker, nav)
   try {
-    initParticles();
-    console.log('[boot] Particle network initialized');
-  } catch (e) { console.error('[boot] initParticles failed:', e); }
+    initPalette();
+    startStatusTicker();
+    console.log('[boot] Shell chrome initialized');
+  } catch (e) { console.error('[boot] shell init failed:', e); }
 
   try {
     initNav();
@@ -230,6 +418,9 @@ async function startApp() {
   await Promise.allSettled(initPromises);
 
   console.log('[boot] All panels initialized!');
+
+  // Auto-focus the omni-input
+  setTimeout(() => { try { document.getElementById('input')?.focus(); } catch {} }, 100);
 
   // Show welcome splash after a short delay so panels have rendered
   setTimeout(showWelcomeModal, 600);
