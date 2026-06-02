@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="/static/css/thinking.css?v=12" />
 <link rel="stylesheet" href="/static/css/browser-live.css?v=5" />
 <link rel="stylesheet" href="/static/css/virtual-computer.css?v=3" />
-<link rel="stylesheet" href="/static/css/brutalist-theme.css?v=1" />
+<link rel="stylesheet" href="/static/css/sci-fi-theme.css?v=1" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -16,34 +16,6 @@
 </head>
 <body>
 <div id="app">
-
-  <!-- ══════════════════════════════════
-       TOP COMMAND BAR
-  ══════════════════════════════════ -->
-  <header id="nx-header">
-    <div class="nx-brand">
-      <span class="nx-brand-mark"></span>
-      <span>HYPER&nbsp;NEXUS</span>
-      <span class="nx-brand-version">v3.0</span>
-    </div>
-    <div id="nx-current-panel" class="nx-current-panel">[CHAT]</div>
-    <div class="nx-spacer"></div>
-    <div class="nx-header-status">
-      <span class="nx-stat"><span id="nx-hdr-model" class="nx-status-dot busy" title="model"></span><span id="nx-hdr-model-label">…</span></span>
-      <span class="nx-stat"><span id="nx-hdr-cost" class="nx-status-dot"></span><span id="nx-hdr-cost-label">$0.00</span></span>
-      <span class="nx-stat"><span id="nx-hdr-tokens" class="nx-status-dot"></span><span id="nx-hdr-tokens-label">0 tok</span></span>
-      <span class="nx-stat"><span id="nx-hdr-ws" class="nx-status-dot"></span><span id="nx-hdr-ws-label">offline</span></span>
-      <span class="nx-stat" style="border-left:1px solid var(--nx-line-1);padding-left:10px"><kbd>CTRL</kbd>+<kbd>K</kbd> palette</span>
-    </div>
-  </header>
-
-  <!-- ══════════════════════════════════
-       COMMAND PALETTE (Cmd/Ctrl+K)
-  ══════════════════════════════════ -->
-  <div id="nx-palette" role="dialog" aria-label="Command palette">
-    <input id="nx-palette-input" class="nx-palette-input" placeholder="Switch panel, run command… try: tools, mcp, new" />
-    <div id="nx-palette-list" class="nx-palette-list"></div>
-  </div>
 
   <!-- ══════════════════════════════════
        SIDEBAR
@@ -194,6 +166,25 @@
           <button id="scroll-fab" title="Scroll to bottom">
             <svg class="fab-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
+          <div id="composer-area">
+            <!-- Attachments preview strip -->
+            <div id="attach-strip" style="display:none"></div>
+            <!-- Main composer row -->
+            <div id="composer">
+              <button id="attach-btn" class="composer-icon-btn" title="Attach file">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              </button>
+              <input type="file" id="file-input" style="display:none" multiple>
+              <div id="composer-inner">
+                <textarea id="input" placeholder="Message Hyper Nexus…" rows="1"></textarea>
+                <span id="char-count"></span>
+              </div>
+              <button id="send" title="Send (Enter)">
+                <svg class="send-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+            <div id="composer-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</div>
+          </div>
         </div>
       </div>
     </section>
@@ -417,49 +408,6 @@
     </section>
 
   </main>
-
-  <!-- ══════════════════════════════════
-       GLOBAL OMNI-INPUT FOOTER
-       (composer lives here in the new shell)
-  ══════════════════════════════════ -->
-  <footer id="nx-omni">
-    <div id="composer-area">
-      <div id="attach-strip" style="display:none"></div>
-      <div id="composer">
-        <button id="attach-btn" class="composer-icon-btn" title="Attach file">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-        </button>
-        <input type="file" id="file-input" style="display:none" multiple>
-        <div id="composer-inner">
-          <textarea id="input" placeholder="Message Hyper Nexus…  (try /commands, @tools, drop files, ⌘K to switch panel)" rows="1"></textarea>
-          <span id="char-count"></span>
-        </div>
-        <div class="nx-omni-side">
-          <span><kbd>ENTER</kbd> send</span>
-        </div>
-        <button id="send" class="nx-omni-send" title="Send (Enter)">
-          <svg class="send-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          SEND
-        </button>
-      </div>
-      <div id="composer-hint" style="display:none">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line · <kbd>Ctrl</kbd>+<kbd>K</kbd> for command palette</div>
-    </div>
-  </footer>
-
-  <!-- ══════════════════════════════════
-       STATUS BAR
-  ══════════════════════════════════ -->
-  <footer id="nx-status">
-    <div class="nx-stat"><span class="nx-stat-label">STATUS</span><span class="nx-stat-value" id="nx-st-status">ready</span></div>
-    <div class="nx-stat"><span class="nx-stat-label">MODEL</span><span class="nx-stat-value" id="nx-st-model">—</span></div>
-    <div class="nx-stat"><span class="nx-stat-label">TOKENS</span><span class="nx-stat-value" id="nx-st-tokens">0</span></div>
-    <div class="nx-stat signal"><span class="nx-stat-label">COST</span><span class="nx-stat-value" id="nx-st-cost">$0.00</span></div>
-    <div class="nx-stat"><span class="nx-stat-label">TOOLS</span><span class="nx-stat-value" id="nx-st-tools">0</span></div>
-    <div class="nx-stat"><span class="nx-stat-label">MEM</span><span class="nx-stat-value" id="nx-st-mem">0</span></div>
-    <div class="nx-spacer"></div>
-    <div class="nx-stat"><span class="nx-stat-label">PANEL</span><span class="nx-stat-value" id="nx-st-panel">CHAT</span></div>
-    <div class="nx-stat"><span class="nx-stat-label">UTC</span><span class="nx-stat-value" id="nx-st-time">--:--:--</span></div>
-  </footer>
 </div>
 
 <!-- Modals -->

@@ -89,11 +89,6 @@ body{
   text-rendering:optimizeLegibility;
 }
 #app{display:grid;grid-template-columns:var(--sb-w) 1fr;height:100vh}
-/* ── Brutalist override: 4-row shell (header / sidenav+canvas / omni / status) ─ */
-#app { grid-template-rows: 32px 1fr 56px 24px; grid-template-areas: "header  header" "sidenav canvas" "sidenav omni" "status  status"; }
-#app > #nx-header { grid-area: header; }
-#app > #nx-omni   { grid-area: omni; }
-#app > #nx-status { grid-area: status; }
 
 /* ── Scrollbar ──────────────────────────────────────────────── */
 ::-webkit-scrollbar{width:5px;height:5px}
