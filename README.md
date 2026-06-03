@@ -1,10 +1,33 @@
 # Hyper Nexus
 
-**An autonomous AI agent platform with adaptive reasoning, 160+ built-in tools, long-term semantic memory, a pure-Python 3D engine, an ML/AI engineering suite, a sandboxed virtual computer, and a real-time Web UI — all in a single Python codebase.**
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Hsosn/HYPER_NEXUS)](https://github.com/Hsosn/HYPER_NEXUS/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/Hsosn/HYPER_NEXUS)](https://github.com/Hsosn/HYPER_NEXUS/issues)
+[![Docker ready](https://img.shields.io/badge/docker-ready-blue.svg)](Dockerfile)
+
+**An autonomous AI agent platform with adaptive reasoning, 165 built-in tools, long-term semantic memory, a pure-Python 3D engine, an ML/AI engineering suite, a sandboxed virtual computer, and a real-time Web UI — all in a single Python codebase.**
 
 > One system. One loop. Infinite capabilities.
 
 **Made by [VESKO LABS](https://veskolabs.com)**
+
+---
+
+## Why Hyper Nexus?
+
+If you've used AutoGPT, OpenHands, CrewAI, or LangChain agents, you already know the pattern: chain calls to an LLM, optionally call some tools, hope the result is good. Hyper Nexus is built around a different idea — **the agent should get measurably better the more you use it, and it should reason laterally the way humans actually solve hard problems.**
+
+Six things you won't find together in any other open-source agent:
+
+1. **Cross-domain creative reasoning (ADHD module)** — when a task is non-trivial, the engine fires the problem across 8 knowledge domains (biology, physics, music, economics, architecture, game theory, neuroscience, military) in parallel, then synthesises analogies back into the system prompt. No other open-source agent does this.
+2. **Self-improvement on a 30-minute heartbeat** — every half hour, the agent reviews its own execution logs, mines successful tool chains, clusters failure patterns, generates heuristic fixes, and writes them to a strategy table that gets injected into future prompts. You can watch it happen in real time.
+3. **Self-reflective post-response loop** — every response gets a cheap secondary LLM call that scores it for accuracy, completeness, and confidence. Low-scoring responses trigger automatic re-planning.
+4. **Dual-layer long-term memory with Ebbinghaus-style forgetting** — a flat semantic store (embedding-based recall) plus a hierarchical tree (chunked, sealed, cross-linked). Idle memories decay in importance; frequently-referenced ones are promoted; duplicates are merged.
+5. **100% self-hosted, MIT licensed, zero cloud calls** — runs on a laptop, a Raspberry Pi 5, or a $5/month VPS. API keys stay on your machine. The vision model (Florence-2) runs on-device. The embedding model (MiniLM) runs on-device. Nothing phones home.
+6. **165 tools + 25 skill packs + 100+ integrations, in one repo** — the equivalent of stacking LangChain + OpenHands + n8n + Zapier into a single `pip install`.
+
+**When to pick something else:** if you only need a chatbot, use the OpenAI API directly. If you need a production-grade orchestrator with a hardened eval harness, use LangGraph. Hyper Nexus is for the person who wants an agent that grows on them, that they can read end-to-end, and that they can run on a Friday night without a credit card.
 
 ---
 
